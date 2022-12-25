@@ -35,3 +35,15 @@ En plus du code source Python 3, vous fournirez un dump de la base de données p
 
 
 # Anlayse fonctionnelle 
+
+Un ouvrage (livre) peut etre écrit par plusieurs auteurs. La description de cet ouvrage est portée par une notice
+
+
+# API endpoints
+
+GET /writers
+
+GET /notices
+GET /notices/<notice_id>
+POST /notices
+PUT /notices/<notice_id> 

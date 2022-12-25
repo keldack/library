@@ -4,12 +4,12 @@
   <element>
     <id>UMLClass</id>
     <coordinates>
-      <x>110</x>
+      <x>90</x>
       <y>120</y>
       <w>200</w>
       <h>90</h>
     </coordinates>
-    <panel_attributes>Auteur
+    <panel_attributes>Writer
 --
 -id: int
 -name: varchar(50)
@@ -25,7 +25,7 @@
       <w>200</w>
       <h>90</h>
     </coordinates>
-    <panel_attributes>Autorité
+    <panel_attributes>Author
 --
 -notice_id: varchar(20)
 -writer_id: int
@@ -39,29 +39,30 @@
       <x>430</x>
       <y>390</y>
       <w>200</w>
-      <h>90</h>
+      <h>100</h>
     </coordinates>
-    <panel_attributes>Emprunt
+    <panel_attributes>Checkout
 --
 -id: int
--exemplaire_id: int
--emprunteur: varchar(100)
+-copy_id: int
+-borrower: varchar(100)
+-on_date: datetime
 </panel_attributes>
     <additional_attributes/>
   </element>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>300</x>
+      <x>280</x>
       <y>150</y>
-      <w>200</w>
+      <w>220</w>
       <h>50</h>
     </coordinates>
     <panel_attributes>lt=-
 m1=0..n
 m2=1
 writer_id = id</panel_attributes>
-    <additional_attributes>180.0;20.0;10.0;20.0</additional_attributes>
+    <additional_attributes>200.0;20.0;10.0;20.0</additional_attributes>
   </element>
   <element>
     <id>UMLClass</id>
@@ -99,7 +100,7 @@ notice_id = id</panel_attributes>
       <w>200</w>
       <h>90</h>
     </coordinates>
-    <panel_attributes>Exemplaire
+    <panel_attributes>Copy
 --
 -id: int
 -notice_id: varchar(20)

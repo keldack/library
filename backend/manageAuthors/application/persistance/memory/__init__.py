@@ -1,4 +1,4 @@
-from core.singleton import Singleton
+from config.singleton import Singleton
 from typing import Type, Any, Dict
 
 class MemoryDatabase(Singleton):

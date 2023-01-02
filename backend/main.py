@@ -1,11 +1,11 @@
 from fastapi import FastAPI
-from core.config import settings
-from core.registry import LibraryRegistry
+from config.config import settings
+from config.registry import LibraryRegistry
 
-from routers.authors import router as authors_router
-from routers.books import router as books_router
-from routers.copies import router as copies_router
-from routers.checkouts import router as checkouts_router
+from backend.manageAuthors.application.web.authorsRouter import router as authors_router
+from backend.manageBooks.application.web.booksRouter import router as books_router
+from backend.manageCopies.infra.web.copiesRouter import router as copies_router
+from backend.manageCheckouts.infra.web.checkoutsRouter import router as checkouts_router
 
 LibraryRegistry.init_registry_and_scan()
 

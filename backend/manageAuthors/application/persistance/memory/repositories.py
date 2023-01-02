@@ -2,13 +2,13 @@ import zope.interface
 from typing import Sequence
 from wired import service_factory
 
-from infra.persistence.memory import MemoryDatabase
+from memory import MemoryDatabase
 
-from domain.repositories import IAuthorRepository
+from domain.ports import IAuthorProvider
 from domain.models import Author
 
-@service_factory(for_=IAuthorRepository, name="memory")
-@zope.interface.implementer(IAuthorRepository)
+@service_factory(for_=IAuthorProvider, name="memory")
+@zope.interface.implementer(IAuthorProvider)
 class AuthorRepository:
 
     @classmethod

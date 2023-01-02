@@ -3,7 +3,7 @@ from typing import Sequence
 
 from domain.models import Author
 
-class IAuthorRepository(zope.interface.Interface):
+class IAuthorProvider(zope.interface.Interface):
     """
     Interface for author repository actions
     """

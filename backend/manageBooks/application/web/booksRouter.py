@@ -1,6 +1,6 @@
 from fastapi import APIRouter
 
-from domain.schemas.books import BookInputSchema
+from manageBooks.application.persistance.schemas.books import BookInputSchema
 
 router = APIRouter(
     prefix="/books",

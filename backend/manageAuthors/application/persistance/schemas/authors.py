@@ -2,7 +2,7 @@ from pydantic import BaseModel
 from typing import Optional
 import zope.interface
 
-from domain.interfaces import IInputSchema
+from domain import IInputSchema
 from domain.models import Author
 
 @zope.interface.implementer(IInputSchema)

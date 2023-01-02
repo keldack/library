@@ -6,7 +6,6 @@ class Author(models.Model):
     name = models.CharField(max_length=50)
 
 
-
 class Notice(models.Model):
 
     id = models.CharField(max_length=20)

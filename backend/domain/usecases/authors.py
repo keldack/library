@@ -22,5 +22,27 @@ class CreateAuthor(UseCaseWrapper):
         return author
 
 
+@zope.interface.implementer(IUseCase)
+class ReadAuthors(UseCaseWrapper):
+
+    def __init__(self):
+        UseCaseWrapper.__init__(self)
+        self._author_repository: IAuthorRepository = self.inject(IAuthorRepository, "persistence")
+
+    def execute(self):
+
+        return self._author_repository.get_all_authors()
+
+@zope.interface.implementer(IUseCase)
+class DeleteAuthor(UseCaseWrapper):
+
+    def __init__(self):
+        UseCaseWrapper.__init__(self)
+        self._author_repository: IAuthorRepository = self.inject(IAuthorRepository, "persistence")
+
+    def execute(self, author_id):
+
+        author = self._author_repository.delete_author(author_id)
+        return author
 
 

@@ -1,5 +1,5 @@
 from core.singleton import Singleton
-from typing import Type, Any
+from typing import Type, Any, Dict
 
 class MemoryDatabase(Singleton):
     """
@@ -10,8 +10,8 @@ class MemoryDatabase(Singleton):
         
         if not self.initDone():
             Singleton.__init__(self)
-            self._repo = {}
-            self._id = 0
+            self._repo: Dict = {}
+            self._id: int = 0
 
     def __get_new_id(self):
         self._id += 1
@@ -53,5 +53,5 @@ class MemoryDatabase(Singleton):
         """
         Delete object for class cls with specific id object_id
         """
-        return self._repo.get(cls.__name__, {}).pop(id, None)
+        return self._repo.get(cls.__name__, {}).pop(object_id, None)
         

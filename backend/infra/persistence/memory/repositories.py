@@ -14,7 +14,7 @@ class AuthorRepository:
     @classmethod
     def __wired_factory__(cls, container):
         return cls()
-        
+
     def __init__(self):
         self.memory_db = MemoryDatabase()
 
@@ -50,4 +50,4 @@ class AuthorRepository:
         """
         Delete the author of id
         """
-        self.memory_db.delete_entity(Author, author_id)
+        return self.memory_db.delete_entity(Author, author_id)

@@ -1,7 +1,7 @@
 from fastapi import APIRouter, status, HTTPException
-from domain.schemas.authors import AuthorSchema
+from persistance.schemas.authors  import AuthorSchema
 
-from domain.usecases.authors import CreateAuthor, ReadAuthors, ReadAuthor, UpdateAuthor, DeleteAuthor
+from domain.usecases.authorsUC import CreateAuthor, ReadAuthors, ReadAuthor, UpdateAuthor, DeleteAuthor
 from domain.usecases.exceptions import KeyDoesNotExist
 
 router = APIRouter(

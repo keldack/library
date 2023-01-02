@@ -1,7 +1,25 @@
+from pydantic import BaseSettings
+from . import version, name as project_name
 
-class Settings:
+dev = {
+    "environment": "development", 
+    "persistence": "memory"
+}
 
-    PROJECT_NAME:str = "Library"
-    PROJECT_VERSION:str = "1.0.0"
+staging = {
+    "environment": "staging", 
+    "persistence": "memory"
+}
+
+prod = {
+    "environment": "production", 
+    "persistence": "django"
+}
+
+class Settings(BaseSettings):
+
+    PROJECT_NAME:str = project_name
+    PROJECT_VERSION:str = version
+    MODE = dev
 
 settings = Settings()

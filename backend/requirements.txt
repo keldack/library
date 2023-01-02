@@ -1,3 +1,7 @@
 fastapi
 uvicorn
 django
+orjson
+zope.interface
+venusian
+wired

@@ -1,37 +1,4 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<diagram program="umlet" version="13.3">
-  <zoom_level>10</zoom_level>
-  <element>
-    <id>UMLActor</id>
-    <coordinates>
-      <x>150</x>
-      <y>530</y>
-      <w>60</w>
-      <h>100</h>
-    </coordinates>
-    <panel_attributes>Reader</panel_attributes>
-    <additional_attributes/>
-  </element>
-  <element>
-    <id>UMLActor</id>
-    <coordinates>
-      <x>620</x>
-      <y>150</y>
-      <w>80</w>
-      <h>100</h>
-    </coordinates>
-    <panel_attributes>Manager</panel_attributes>
-    <additional_attributes/>
-  </element>
-  <element>
-    <id>UMLUseCase</id>
-    <coordinates>
-      <x>270</x>
-      <y>460</y>
-      <w>140</w>
-      <h>60</h>
-    </coordinates>
-    <panel_attributes>Borrow a book
+<diagram program="umletino" version="15.0.0"><zoom_level>10</zoom_level><element><id>UMLActor</id><coordinates><x>150</x><y>530</y><w>60</w><h>110</h></coordinates><panel_attributes>Reader</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLActor</id><coordinates><x>630</x><y>150</y><w>60</w><h>110</h></coordinates><panel_attributes>Manager</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLUseCase</id><coordinates><x>270</x><y>460</y><w>140</w><h>60</h></coordinates><panel_attributes>Borrow a book
 bg=orange
 fg=black</panel_attributes>
     <additional_attributes/>
@@ -55,7 +22,7 @@ fg=black</panel_attributes>
       <w>140</w>
       <h>50</h>
     </coordinates>
-    <panel_attributes>Manage authors</panel_attributes>
+    <panel_attributes>Manage writers</panel_attributes>
     <additional_attributes/>
   </element>
   <element>
@@ -73,11 +40,11 @@ fg=black</panel_attributes>
     <id>UMLUseCase</id>
     <coordinates>
       <x>840</x>
-      <y>210</y>
+      <y>220</y>
       <w>140</w>
       <h>50</h>
     </coordinates>
-    <panel_attributes>Manage books</panel_attributes>
+    <panel_attributes>Manage copies</panel_attributes>
     <additional_attributes/>
   </element>
   <element>
@@ -108,21 +75,10 @@ fg=black</panel_attributes>
       <x>680</x>
       <y>170</y>
       <w>180</w>
-      <h>80</h>
+      <h>90</h>
     </coordinates>
     <panel_attributes/>
-    <additional_attributes>10.0;10.0;160.0;60.0</additional_attributes>
-  </element>
-  <element>
-    <id>UMLUseCase</id>
-    <coordinates>
-      <x>840</x>
-      <y>290</y>
-      <w>140</w>
-      <h>50</h>
-    </coordinates>
-    <panel_attributes>Create reader</panel_attributes>
-    <additional_attributes/>
+    <additional_attributes>10.0;10.0;160.0;70.0</additional_attributes>
   </element>
   <element>
     <id>UMLUseCase</id>
@@ -149,17 +105,6 @@ fg=black</panel_attributes>
     <additional_attributes>10.0;10.0;70.0;70.0</additional_attributes>
   </element>
   <element>
-    <id>Relation</id>
-    <coordinates>
-      <x>680</x>
-      <y>170</y>
-      <w>180</w>
-      <h>160</h>
-    </coordinates>
-    <panel_attributes/>
-    <additional_attributes>10.0;10.0;160.0;140.0</additional_attributes>
-  </element>
-  <element>
     <id>UMLUseCase</id>
     <coordinates>
       <x>510</x>
@@ -167,7 +112,7 @@ fg=black</panel_attributes>
       <w>140</w>
       <h>50</h>
     </coordinates>
-    <panel_attributes>Register borrow</panel_attributes>
+    <panel_attributes>Checkout book</panel_attributes>
     <additional_attributes/>
   </element>
   <element>
@@ -250,20 +195,6 @@ halign=left</panel_attributes>
     <panel_attributes>Out of system
 halign=left
 bg=orange
-fg=black</panel_attributes>
-    <additional_attributes/>
-  </element>
-  <element>
-    <id>UMLNote</id>
-    <coordinates>
-      <x>20</x>
-      <y>30</y>
-      <w>160</w>
-      <h>110</h>
-    </coordinates>
-    <panel_attributes>Legend
+fg=black</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLNote</id><coordinates><x>20</x><y>30</y><w>160</w><h>110</h></coordinates><panel_attributes>Legend
 bg=white
-fg=black</panel_attributes>
-    <additional_attributes/>
-  </element>
-</diagram>
+fg=black</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLUseCase</id><coordinates><x>370</x><y>50</y><w>140</w><h>50</h></coordinates><panel_attributes>Login</panel_attributes><additional_attributes></additional_attributes></element><element><id>Relation</id><coordinates><x>500</x><y>80</y><w>150</w><h>120</h></coordinates><panel_attributes></panel_attributes><additional_attributes>10;10;130;100</additional_attributes></element></diagram>

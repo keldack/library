@@ -4,6 +4,7 @@ from domain.usecases import UseCaseWrapper
 from domain.schemas.authors import AuthorSchema
 from domain.models import Author
 from domain.repositories import IAuthorRepository
+from domain.usecases.exceptions import KeyDoesNotExist
 
 
 @zope.interface.implementer(IUseCase)
@@ -30,8 +31,38 @@ class ReadAuthors(UseCaseWrapper):
         self._author_repository: IAuthorRepository = self.inject(IAuthorRepository, "persistence")
 
     def execute(self):
-
         return self._author_repository.get_all_authors()
+
+
+@zope.interface.implementer(IUseCase)
+class ReadAuthor(UseCaseWrapper):
+
+    def __init__(self):
+        UseCaseWrapper.__init__(self)
+        self._author_repository: IAuthorRepository = self.inject(IAuthorRepository, "persistence")
+
+    def execute(self, author_id: int):
+        author = self._author_repository.get_author_by_id(author_id)
+        if author is None:
+            raise KeyDoesNotExist(f"No author for id {author_id}")
+        return author
+
+@zope.interface.implementer(IUseCase)
+class UpdateAuthor(UseCaseWrapper):
+
+    def __init__(self):
+        UseCaseWrapper.__init__(self)
+        self._author_repository: IAuthorRepository = self.inject(IAuthorRepository, "persistence")
+
+    def execute(self, author_id: int, schema: AuthorSchema):
+        the_author = self._author_repository.get_author_by_id(author_id)
+        if the_author is None:
+            raise KeyDoesNotExist(f"No author for id {author_id}")
+        author: Author = schema.to_domain()
+        author.id = author_id
+        self._author_repository.update_author(author)
+        return author
+
 
 @zope.interface.implementer(IUseCase)
 class DeleteAuthor(UseCaseWrapper):

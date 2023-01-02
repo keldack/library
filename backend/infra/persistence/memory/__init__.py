@@ -39,7 +39,7 @@ class MemoryDatabase(Singleton):
         """
         Get object for class cls with specific id object_id
         """
-        return self._repo.get(cls.__name__, {}).get(id, None)
+        return self._repo.get(cls.__name__, {}).get(object_id, None)
 
 
     def get_entities_type(self, cls: Type[Any]):

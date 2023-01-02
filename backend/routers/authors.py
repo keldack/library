@@ -1,7 +1,8 @@
 from fastapi import APIRouter, status, HTTPException
 from domain.schemas.authors import AuthorSchema
 
-from domain.usecases.authors import CreateAuthor, ReadAuthors, DeleteAuthor
+from domain.usecases.authors import CreateAuthor, ReadAuthors, ReadAuthor, UpdateAuthor, DeleteAuthor
+from domain.usecases.exceptions import KeyDoesNotExist
 
 router = APIRouter(
     prefix="/authors",
@@ -15,10 +16,14 @@ async def get_all_authors():
     return [author.to_schema() for author in authors]
 
 
-@router.get("/{user_id}")
-async def get_author_by_id(user_id: int):
+@router.get("/{author_id}")
+async def get_author_by_id(author_id: int):
     """Get an author by its id"""
-    return {"username": "Unknown"}
+    try:
+        author = ReadAuthor().execute(author_id)
+        return author.to_schema()
+    except KeyDoesNotExist as exception:
+        raise HTTPException(status_code=404, detail=str(exception))
 
 
 @router.post("", status_code=status.HTTP_201_CREATED)
@@ -28,17 +33,24 @@ async def create_author(schema: AuthorSchema) -> AuthorSchema:
     return author.to_schema()
 
 
-@router.put("/{user_id}")
-async def modify_author(user_id: int):
+@router.put("/{author_id_id}")
+async def modify_author(author_id: int, schema: AuthorSchema) -> AuthorSchema:
     """Modify an author"""
-    return {"username": "Unknown"}
+    
+    try:
+        author = UpdateAuthor().execute(author_id, schema)
+        return author.to_schema()
+    except KeyDoesNotExist as exception:
+        raise HTTPException(status_code=404, detail=str(exception))
 
 
-@router.delete("/{user_id}", status_code=status.HTTP_204_NO_CONTENT)
-async def delete_author(user_id: int):
+@router.delete("/{author_id}", status_code=status.HTTP_204_NO_CONTENT)
+async def delete_author(author_id: int):
     """Delete an author"""
-    author = DeleteAuthor().execute(user_id)
-    if not author:
-        raise HTTPException(status_code=404, detail="Author does not exist")
+
+    try:
+        DeleteAuthor().execute(author_id)
+    except KeyDoesNotExist as exception:
+        raise HTTPException(status_code=404, detail=str(exception))
 
 

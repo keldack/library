@@ -4,7 +4,7 @@ from venusian import Scanner
 from wired import ServiceRegistry
 
 import domain
-import infra
+import application
 
 class LibraryRegistry:
 
@@ -41,7 +41,7 @@ class LibraryRegistry:
         scanner = Scanner(registry=registry)
 
         scanner.scan(domain)
-        scanner.scan(infra)
+        scanner.scan(application)
         
         cls.scanner = scanner
         cls.registry = registry

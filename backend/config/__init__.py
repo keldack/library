@@ -1,5 +1,7 @@
+project_name = "Library"
+version = "0.0.1"
+
 from pydantic import BaseSettings
-from . import version, name as project_name
 
 dev = {
     "environment": "development", 

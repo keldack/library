@@ -1,6 +1,7 @@
 from fastapi import APIRouter, status, HTTPException
-from domain.schemas.authors import AuthorSchema
+from application.schemas.authors import AuthorSchema
 
+from domain.models import Author
 from domain.usecases.authors import CreateAuthor, ReadAuthors, ReadAuthor, UpdateAuthor, DeleteAuthor
 from domain.usecases.exceptions import KeyDoesNotExist
 
@@ -29,16 +30,19 @@ async def get_author_by_id(author_id: int):
 @router.post("", status_code=status.HTTP_201_CREATED)
 async def create_author(schema: AuthorSchema) -> AuthorSchema:
     """Create an author"""
-    author = CreateAuthor().execute(schema)
+    author: Author = schema.to_domain() 
+    author = CreateAuthor().execute(author)
     return author.to_schema()
 
 
-@router.put("/{author_id_id}")
+@router.put("/{author_id}")
 async def modify_author(author_id: int, schema: AuthorSchema) -> AuthorSchema:
     """Modify an author"""
     
     try:
-        author = UpdateAuthor().execute(author_id, schema)
+        author: Author = schema.to_domain()
+        author.id = author_id
+        author = UpdateAuthor().execute(author)
         return author.to_schema()
     except KeyDoesNotExist as exception:
         raise HTTPException(status_code=404, detail=str(exception))

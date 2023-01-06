@@ -1,7 +1,6 @@
 import zope.interface
 from domain.interfaces import IUseCase
 from domain.usecases import UseCaseWrapper
-from domain.schemas.authors import AuthorSchema
 from domain.models import Author
 from domain.repositories import IAuthorRepository
 from domain.usecases.exceptions import KeyDoesNotExist
@@ -15,11 +14,9 @@ class CreateAuthor(UseCaseWrapper):
         UseCaseWrapper.__init__(self)
         self.author_repository: IAuthorRepository = self.inject(IAuthorRepository, "persistence")
 
-    def execute(self, schema: AuthorSchema):
+    def execute(self, author: Author):
 
-        author: Author = schema.to_domain()
         self.author_repository.create_author(author)
-
         return author
 
 
@@ -47,6 +44,7 @@ class ReadAuthor(UseCaseWrapper):
             raise KeyDoesNotExist(f"No author for id {author_id}")
         return author
 
+
 @zope.interface.implementer(IUseCase)
 class UpdateAuthor(UseCaseWrapper):
 
@@ -54,12 +52,10 @@ class UpdateAuthor(UseCaseWrapper):
         UseCaseWrapper.__init__(self)
         self._author_repository: IAuthorRepository = self.inject(IAuthorRepository, "persistence")
 
-    def execute(self, author_id: int, schema: AuthorSchema):
-        the_author = self._author_repository.get_author_by_id(author_id)
-        if the_author is None:
-            raise KeyDoesNotExist(f"No author for id {author_id}")
-        author: Author = schema.to_domain()
-        author.id = author_id
+    def execute(self, author: Author):
+        found_author = self._author_repository.get_author_by_id(author.id)
+        if found_author is None:
+            raise KeyDoesNotExist(f"No author for id {author.id}")
         self._author_repository.update_author(author)
         return author
 
@@ -72,7 +68,10 @@ class DeleteAuthor(UseCaseWrapper):
         self._author_repository: IAuthorRepository = self.inject(IAuthorRepository, "persistence")
 
     def execute(self, author_id):
-
+        found_author = self._author_repository.get_author_by_id(author_id)
+        if found_author is None:
+            raise KeyDoesNotExist(f"No author for id {author_id}")
+        
         author = self._author_repository.delete_author(author_id)
         return author
 

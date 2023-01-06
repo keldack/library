@@ -1,6 +1,6 @@
 from typing import Any
-from core.config import settings
-from core.registry import LibraryRegistry as Registry
+from config import settings
+from config.registry import LibraryRegistry as Registry
 
 class UseCaseWrapper:
     """

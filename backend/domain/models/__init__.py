@@ -1,5 +1,5 @@
 from __future__ import annotations
-
+from enum import Enum
 from dataclasses import dataclass, KW_ONLY, field
 from typing import Set, Optional, Sequence
 import datetime
@@ -9,7 +9,7 @@ class Author:
 
     _: KW_ONLY
     id: int = None
-    name: str
+    name: Optional[str] = field(default_factory=str)
     books: Optional[Sequence[Book]] = field(default_factory=list)
 
     def to_schema(self):
@@ -24,6 +24,9 @@ class Book:
     title: str
     authors: Set[Author]
 
+    def to_schema(self):
+        return self.__dict__.copy()
+
 
 @dataclass
 class Copy:
@@ -33,6 +36,13 @@ class Copy:
     book: Book
     place: str
 
+    def to_schema(self):
+        return self.__dict__.copy()
+
+
+class CheckoutStatus(str, Enum):
+    OPENED = "Opened"
+    CLOSED = "Closed"
 
 @dataclass
 class Checkout:
@@ -41,3 +51,9 @@ class Checkout:
     id: int = None
     copy: Copy
     on_date: datetime.date = datetime.date.today()
+    borrower: str
+    state: CheckoutStatus
+
+
+    def to_schema(self):
+        return self.__dict__.copy()

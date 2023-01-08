@@ -13,3 +13,10 @@ class IInputSchema(zope.interface.Interface):
         """
         ...
 
+
+class IOutputSchema(zope.interface.Interface):
+    """
+    Interface for output schema exiting domain via output port
+    """
+    ...
+

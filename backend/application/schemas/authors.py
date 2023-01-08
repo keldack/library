@@ -1,5 +1,4 @@
 from pydantic import BaseModel
-from typing import Optional
 import zope.interface
 
 from application.schemas import IInputSchema
@@ -13,3 +12,5 @@ class AuthorSchema(BaseModel):
 
     def to_domain(self) -> Author:
         return Author(id = self.id, name = self.name)
+
+

@@ -8,7 +8,7 @@ from domain.models import Checkout, Copy
 
 
 @zope.interface.implementer(IInputSchema)
-class CheckoutInputSchema(BaseModel):
+class CheckoutSchema(BaseModel):
     """
     Schema used for creation and update of a book from application
     """
@@ -23,6 +23,6 @@ class CheckoutInputSchema(BaseModel):
             id = self.id, 
             borrower = self.borrower,
             on_date = self.on_date,
-            copy = Copy(id=self.copy)
+            copy = Copy(id=self.copy_id)
         )
 

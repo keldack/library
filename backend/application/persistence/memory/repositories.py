@@ -79,20 +79,17 @@ class BookRepository():
         """
             Returns all books
         """
-        return self.memory_db.get_entities_type(Book)
+        books = self.memory_db.get_entities_type(Book)
+        return books
 
-
-    def get_all_books_for_author(self, author: Author) -> Sequence[Book]:
-        """
-            Returns all books of an author
-        """
-        ...
 
     def get_book_by_id(self, book_id: int) -> Book:
         """
         Returns specific book for id
         """
-        return self.memory_db.get_entity(Book, book_id)
+        book = self.memory_db.get_entity(Book, book_id)
+        book.authors = self.memory_db.get_relations(book, "author")
+        return book
 
 
     def get_book_by_isbn(self, book_isbn: str) -> Book:

@@ -2,7 +2,7 @@ import zope.interface
 from domain.interfaces import IUseCase
 from domain.usecases import UseCaseWrapper
 from domain.models import Copy
-from domain.repositories import ICopyRepository
+from domain.repositories import ICopyRepository, IBookRepository
 from domain.usecases.exceptions import KeyDoesNotExist
 
 @zope.interface.implementer(IUseCase)
@@ -12,8 +12,12 @@ class CreateCopy(UseCaseWrapper):
     def __init__(self):
         UseCaseWrapper.__init__(self)
         self.copy_repository: ICopyRepository = self.inject(ICopyRepository, "persistence")
+        self.book_repository: IBookRepository = self.inject(IBookRepository, "persistence")
 
     def execute(self, copy: Copy):
+        found_book = self.book_repository.get_book_by_id(copy.book.id)
+        if found_book is None:
+            raise KeyDoesNotExist(f"No book for id {copy.book.id}")
 
         self.copy_repository.create_copy(copy)
         return copy
@@ -52,11 +56,12 @@ class PatchCopy(UseCaseWrapper):
         self.copy_repository: ICopyRepository = self.inject(ICopyRepository, "persistence")
 
     def execute(self, copy: Copy):
-        found_author = self.copy_repository.get_copy_by_id(copy.id)
-        if found_author is None:
+        found_copy = self.copy_repository.get_copy_by_id(copy.id)
+        if found_copy is None:
             raise KeyDoesNotExist(f"No author for id {copy.id}")
-        self.copy_repository.patch_copy(copy)
-        return copy
+        found_copy.place = copy.place
+        self.copy_repository.patch_copy(found_copy)
+        return found_copy
 
 
 @zope.interface.implementer(IUseCase)

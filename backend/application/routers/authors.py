@@ -1,6 +1,8 @@
 from fastapi import APIRouter, status, HTTPException, Request, Response
+from typing import List
 
 from application.schemas.authors import AuthorSchema
+from application.schemas.books import BookOutputSchema
 
 from domain.models import Author
 from domain.usecases.authors import CreateAuthor, ReadAuthors, ReadAuthor, UpdateAuthor, DeleteAuthor, ReadBooksOfAuthor
@@ -11,14 +13,14 @@ router = APIRouter(
     tags=["authors"]
 )
 
-@router.get("")
+@router.get("", response_model=List[AuthorSchema])
 async def get_all_authors():
     """Get all authors"""
     authors = ReadAuthors().execute()
     return [author.to_schema() for author in authors]
 
 
-@router.get("/{author_id}")
+@router.get("/{author_id}", response_model=AuthorSchema)
 async def get_author_by_id(author_id: int):
     """Get an author by its id"""
     try:
@@ -28,7 +30,11 @@ async def get_author_by_id(author_id: int):
         raise HTTPException(status_code=404, detail=str(exception))
 
 
-@router.post("", status_code=status.HTTP_201_CREATED)
+@router.post(
+    "", 
+    status_code=status.HTTP_201_CREATED,
+    response_model=AuthorSchema
+    )
 async def create_author(request: Request, response: Response, schema: AuthorSchema) -> AuthorSchema:
     """Create an author"""
     author: Author = schema.to_domain() 
@@ -37,7 +43,7 @@ async def create_author(request: Request, response: Response, schema: AuthorSche
     return author
 
 
-@router.put("/{author_id}")
+@router.put("/{author_id}", response_model=AuthorSchema)
 async def modify_author(author_id: int, schema: AuthorSchema) -> AuthorSchema:
     """Modify an author"""
     
@@ -60,11 +66,12 @@ async def delete_author(author_id: int):
         raise HTTPException(status_code=404, detail=str(exception))
 
 
-@router.get("/{author_id}/books")
-async def get_author_by_id(author_id: int):
+@router.get("/{author_id}/books", response_model=List[BookOutputSchema])
+async def get_books_of_author(author_id: int):
     """Get all books of an author id"""
     try:
         books = ReadBooksOfAuthor().execute(author_id)
+        print("Books are", books)
         return [book.to_schema() for book in books]
     except KeyDoesNotExist as exception:
         raise HTTPException(status_code=404, detail=str(exception))

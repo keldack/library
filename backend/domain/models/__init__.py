@@ -50,7 +50,7 @@ class Checkout:
     _: KW_ONLY
     id: int = None
     copy: Copy
-    on_date: datetime.date = datetime.date.today()
+    on_date: datetime.date = field(default=datetime.date.today())
     borrower: str
     state: CheckoutStatus
 

@@ -1,4 +1,5 @@
 import zope.interface
+
 from domain.interfaces import IUseCase
 from domain.usecases import UseCaseWrapper
 from domain.models import Book
@@ -65,6 +66,7 @@ class ReadBooks(UseCaseWrapper):
 @zope.interface.implementer(IUseCase)
 class ReadBook(UseCaseWrapper):
 
+
     def __init__(self):
         UseCaseWrapper.__init__(self)
         self.book_repository: IBookRepository = self.inject(IBookRepository, "persistence")
@@ -73,6 +75,7 @@ class ReadBook(UseCaseWrapper):
         book = self.book_repository.get_book_by_id(book_id)
         if book is None:
             raise KeyDoesNotExist(f"No book for id {book_id}")
+
         return book
 
 

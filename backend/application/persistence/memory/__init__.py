@@ -129,7 +129,7 @@ class MemoryDatabase(Singleton):
             result = [
                 self._nodes[type_key][object_key].entity for type_key, object_key in self._links[key].get(relation, [])
             ]
-            
+        return result
 
     def __delete_all_relations(self, node_key: str):
         """

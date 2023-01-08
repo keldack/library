@@ -35,11 +35,29 @@ curl -X DELETE -H "Content-Type: application/json" -d '' http://127.0.0.1:8000/b
 
 # Create Copy
 echo "Create copy 1"
-curl -X POST -H "Content-Type: application/json" -d '{"place":"R1E1", "book":6}' http://127.0.0.1:8000/copies; echo
+curl -X POST -H "Content-Type: application/json" -d '{"place":"R1E1", "book":1}' http://127.0.0.1:8000/copies; echo
 # Create Copy
 echo "Create copy 2"
-curl -X POST -H "Content-Type: application/json" -d '{"place":"R1E1", "book":6}' http://127.0.0.1:8000/copies; echo
+curl -X POST -H "Content-Type: application/json" -d '{"place":"R1E1", "book":1}' http://127.0.0.1:8000/copies; echo
 # Create Copy
 echo "Create copy 3"
-curl -X POST -H "Content-Type: application/json" -d '{"place":"R1E1", "book":6}' http://127.0.0.1:8000/copies; echo
+curl -X POST -H "Content-Type: application/json" -d '{"place":"R1E1", "book":1}' http://127.0.0.1:8000/copies; echo
+# Create Copy
+echo "Create copy 4"
+curl -X POST -H "Content-Type: application/json" -d '{"place":"R1E1", "book":2}' http://127.0.0.1:8000/copies; echo
+# Create copy
+echo "Create copy 5"
+curl -X POST -H "Content-Type: application/json" -d '{"place":"R1E1", "book":2}' http://127.0.0.1:8000/copies; echo
+# Patch copy 4
+echo "Patch copy 4"
+curl -X PATCH -H "Content-Type: application/json" -d '{"place":"R2E2", "book":2}' http://127.0.0.1:8000/copies/4; echo
+# Get copy 4
+echo "Get copy 4"
+curl -X GET -H "Content-Type: application/json" -d '' http://127.0.0.1:8000/copies/4; echo
+# Delete copy 5
+echo "Delete copy 5"
+curl -X DELETE -H "Content-Type: application/json" -d '' http://127.0.0.1:8000/copies/5; echo
 
+# Create checkouts
+echo "Create checkout 1"
+curl -X POST -H "Content-Type: application/json" -d '{"borrower":"Gédéon", "copy":1}' http://127.0.0.1:8000/checkouts; echo

@@ -1,6 +1,6 @@
 from fastapi import APIRouter, HTTPException, status, Request, Response
 
-from application.schemas.copies import CopyInputSchema
+from application.schemas.copies import CopyInputSchema, PatchCopyInputSchema
 from domain.models import Book, Copy
 from domain.usecases.copies import CreateCopy, ReadCopies, ReadCopy, PatchCopy, DeleteCopy
 from domain.usecases.exceptions import KeyDoesNotExist
@@ -34,18 +34,20 @@ async def get_copy_by_id(copy_id: int):
 @router.post("", status_code=status.HTTP_201_CREATED)
 async def create_copy(request: Request, response: Response, schema: CopyInputSchema):
     """Create a copy"""
-    copy: Copy = schema.to_domain()
-    copy = CreateCopy().execute(copy)
-    response.headers["Location"] = f"{request.base_url}copies/{copy.id}"
-    return copy.to_schema()
+    try:
+        copy: Copy = schema.to_domain()
+        copy = CreateCopy().execute(copy)
+        response.headers["Location"] = f"{request.base_url}copies/{copy.id}"
+        return copy.to_schema()
+    except KeyDoesNotExist as exception:
+        raise HTTPException(status_code=400, detail=str(exception))
 
 
 @router.patch("/{copy_id}")
-async def patch_copy(copy_id: int, schema: CopyInputSchema):
+async def patch_copy(copy_id: int, schema: PatchCopyInputSchema):
     """Modify a copy"""
     try:
-        copy: Copy = schema.to_domain
-        copy.id = copy_id
+        copy = Copy(id = copy_id, place = schema.place)
         copy = PatchCopy().execute(copy)
         return copy.to_schema()
     except KeyDoesNotExist as exception:

@@ -1,4 +1,6 @@
 import zope.interface
+
+
 from domain.interfaces import IUseCase
 from domain.usecases import UseCaseWrapper
 from domain.models import Checkout
@@ -45,6 +47,21 @@ class ReadCheckout(UseCaseWrapper):
 
 
 @zope.interface.implementer(IUseCase)
+class PatchCheckout(UseCaseWrapper):
+
+    def __init__(self):
+        UseCaseWrapper.__init__(self)
+        self.checkout_repository: ICheckoutRepository = self.inject(ICheckoutRepository, "persistence")
+
+    def execute(self, checkout: Checkout):
+        found_checkout = self.checkout_repository.get_checkout_by_id(checkout.id)
+        if found_checkout is None:
+            raise KeyDoesNotExist(f"No checkout for id {checkout.id}")
+        self.checkout_repository.patch_checkout(checkout)
+        return checkout
+
+
+@zope.interface.implementer(IUseCase)
 class ProlongateCheckout(UseCaseWrapper):
 
     def __init__(self):
@@ -59,3 +76,16 @@ class ProlongateCheckout(UseCaseWrapper):
         return checkout
 
 
+@zope.interface.implementer(IUseCase)
+class DeleteCheckout(UseCaseWrapper):
+
+    def __init__(self):
+        UseCaseWrapper.__init__(self)
+        self.checkout_repository: ICheckoutRepository = self.inject(ICheckoutRepository, "persistence")
+
+    def execute(self, checkout: Checkout):
+        found_checkout = self.checkout_repository.get_checkout_by_id(checkout.id)
+        if found_checkout is None:
+            raise KeyDoesNotExist(f"No checkout for id {checkout.id}")
+        self.checkout_repository.patch_checkout(checkout)
+        return checkout

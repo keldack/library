@@ -1,6 +1,7 @@
 from fastapi import APIRouter, HTTPException, status, Request, Response
 
-from application.schemas.books import BookInputSchema
+from application.schemas.books import BookInputSchema, BookOutputSchema
+from application.schemas.authors import AuthorSchema
 from domain.models import Book
 from domain.usecases.books import CreateBook, ReadBooks, ReadBook, UpdateBook, DeleteBook, GetCopiesOfBook
 from domain.usecases.exceptions import KeyDoesNotExist
@@ -17,12 +18,24 @@ async def get_all_books():
     return [book.to_schema() for book in books]
 
 
-@router.get("/{book_id}")
+@router.get("/{book_id}", response_model=BookOutputSchema)
 async def get_book_by_id(book_id: int):
     """Get a book by its id"""
     try:
         book = ReadBook().execute(book_id)
-        return book.to_schema()
+        
+        # Special remove ok books reference for iside authors
+        schema = BookOutputSchema(
+            id=book.id, 
+            isbn=book.isbn, 
+            title=book.title,
+            authors = [
+                AuthorSchema(id=author.id, name = author.name) for author in book.authors
+            ]
+        )
+        print(schema)
+        return schema
+
     except KeyDoesNotExist as exception:
         raise HTTPException(status_code=404, detail=str(exception))
 
@@ -31,10 +44,13 @@ async def get_book_by_id(book_id: int):
 async def create_book(request: Request, response: Response, schema: BookInputSchema):
     """Create a book"""
     
-    book: Book = schema.to_domain()
-    book = CreateBook().execute(book)
-    response.headers["Location"] = f"{request.base_url}books/{book.id}"
-    return book.to_schema()
+    try:
+        book: Book = schema.to_domain()
+        book = CreateBook().execute(book)
+        response.headers["Location"] = f"{request.base_url}books/{book.id}"
+        return book.to_schema()
+    except KeyDoesNotExist as exception:
+        raise HTTPException(status_code=400, detail=str(exception))
     
 
 @router.put("/{book_id}")
@@ -63,5 +79,8 @@ async def delete_book(book_id: int):
 async def get_copies_of_book(book_id: int):
     """Get all copies of a book"""
     
-    return GetCopiesOfBook().execute(book_id)
+    try:
+        return GetCopiesOfBook().execute(book_id)
+    except KeyDoesNotExist as exception:
+        raise HTTPException(status_code=404, detail=str(exception))
     

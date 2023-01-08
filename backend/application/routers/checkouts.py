@@ -1,4 +1,8 @@
-from fastapi import APIRouter
+from fastapi import APIRouter, status, Request, Response
+from application.schemas.checkout import CheckoutInputSchema
+
+from domain.models import Checkout
+from domain.usecases.checkouts import CreateCheckout
 
 router = APIRouter()
 
@@ -22,9 +26,12 @@ async def get_checkout_by_id(checkout_id: int):
 
 
 @router.post("")
-async def create_checkout():
+async def create_checkout(request: Request, response: Response, schema: CheckoutInputSchema):
     """Create a checkout"""
-    return {"books": []}
+    checkout: Checkout = schema.to_domain()
+    checkout = CreateCheckout().execute(checkout)
+    response.headers["Location"] = f"{request.base_url}checkouts/{checkout.id}"
+    return checkout.to_schema()
 
 
 @router.put("/{checkout_id}")

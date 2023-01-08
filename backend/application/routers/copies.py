@@ -1,4 +1,4 @@
-from fastapi import APIRouter, HTTPException, status
+from fastapi import APIRouter, HTTPException, status, Request, Response
 
 from application.schemas.copies import CopyInputSchema
 from domain.models import Book, Copy
@@ -32,10 +32,11 @@ async def get_copy_by_id(copy_id: int):
 
 
 @router.post("", status_code=status.HTTP_201_CREATED)
-async def create_copy(schema: CopyInputSchema):
+async def create_copy(request: Request, response: Response, schema: CopyInputSchema):
     """Create a copy"""
     copy: Copy = schema.to_domain()
     copy = CreateCopy().execute(copy)
+    response.headers["Location"] = f"{request.base_url}copies/{copy.id}"
     return copy.to_schema()
 
 

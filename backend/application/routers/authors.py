@@ -1,8 +1,9 @@
-from fastapi import APIRouter, status, HTTPException
+from fastapi import APIRouter, status, HTTPException, Request, Response
+
 from application.schemas.authors import AuthorSchema
 
 from domain.models import Author
-from domain.usecases.authors import CreateAuthor, ReadAuthors, ReadAuthor, UpdateAuthor, DeleteAuthor
+from domain.usecases.authors import CreateAuthor, ReadAuthors, ReadAuthor, UpdateAuthor, DeleteAuthor, ReadBooksOfAuthor
 from domain.usecases.exceptions import KeyDoesNotExist
 
 router = APIRouter(
@@ -28,11 +29,12 @@ async def get_author_by_id(author_id: int):
 
 
 @router.post("", status_code=status.HTTP_201_CREATED)
-async def create_author(schema: AuthorSchema) -> AuthorSchema:
+async def create_author(request: Request, response: Response, schema: AuthorSchema) -> AuthorSchema:
     """Create an author"""
     author: Author = schema.to_domain() 
     author = CreateAuthor().execute(author)
-    return author.to_schema()
+    response.headers["Location"] = f"{request.base_url}authors/{author.id}"
+    return author
 
 
 @router.put("/{author_id}")
@@ -58,3 +60,11 @@ async def delete_author(author_id: int):
         raise HTTPException(status_code=404, detail=str(exception))
 
 
+@router.get("/{author_id}/books")
+async def get_author_by_id(author_id: int):
+    """Get all books of an author id"""
+    try:
+        books = ReadBooksOfAuthor().execute(author_id)
+        return [book.to_schema() for book in books]
+    except KeyDoesNotExist as exception:
+        raise HTTPException(status_code=404, detail=str(exception))

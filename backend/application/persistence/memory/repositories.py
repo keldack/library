@@ -53,6 +53,12 @@ class AuthorRepository:
         return self.memory_db.delete_entity(Author, author_id)
 
 
+    def get_books_of_author(self, author: Author) -> Sequence[Book]:
+        """
+        Get all books of an author
+        """
+        return self.memory_db.get_relations(author, "author")
+
 
 @service_factory(for_=IBookRepository, name="memory")
 @zope.interface.implementer(IBookRepository)
@@ -121,6 +127,14 @@ class BookRepository():
         return self.memory_db.delete_entity(Book, book_id)
 
 
+    def get_copies(self, book: Book) -> Sequence[Copy]:
+        """
+        Get all copies of a book
+        """
+        copies = self.memory_db.get_relations(book, "copies")
+        return copies
+
+
 @service_factory(for_=ICopyRepository, name="memory")
 @zope.interface.implementer(ICopyRepository)
 class CopyRepository():
@@ -169,6 +183,7 @@ class CopyRepository():
         """
         Make the return to the library of checkout copy
         """
+        return self.memory_db.get_entity(Copy, copy_id)
         
 
 @service_factory(for_=ICheckoutRepository, name="memory")

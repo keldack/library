@@ -20,9 +20,9 @@ class Book:
 
     _: KW_ONLY
     id: int = None
-    isbn: str
-    title: str
-    authors: Set[Author]
+    isbn: Optional[str] = field(default_factory=str)
+    title: Optional[str] = field(default_factory=str)
+    authors: Optional[Set[Author]] = field(default_factory=list)
 
     def to_schema(self):
         return self.__dict__.copy()
@@ -33,8 +33,8 @@ class Copy:
 
     _: KW_ONLY
     id: int = None
-    book: Book
-    place: str
+    book: Optional[Book] = None
+    place: Optional[str] = field(default_factory=str)
 
     def to_schema(self):
         return self.__dict__.copy()

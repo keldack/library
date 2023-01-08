@@ -38,7 +38,7 @@ class ReadCopy(UseCaseWrapper):
         self.copy_repository: ICopyRepository = self.inject(ICopyRepository, "persistence")
 
     def execute(self, copy_id: int):
-        copy: Copy = self.copy_repository.get_author_by_id(copy_id)
+        copy: Copy = self.copy_repository.get_copy_by_id(copy_id)
         if copy is None:
             raise KeyDoesNotExist(f"No author for id {copy_id}")
         return copy

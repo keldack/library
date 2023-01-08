@@ -1,4 +1,6 @@
-from fastapi import FastAPI
+from typing import Any
+
+from fastapi import FastAPI, Request
 from config import settings
 from config.registry import LibraryRegistry
 
@@ -20,8 +22,26 @@ app.include_router(checkouts_router)
 
 
 @app.get("/")
-async def hello_api():
+async def hello_api(request: Request):
+    environment = settings.MODE["environment"]
+    return {
+        "message":f"Welcome to Library API in {environment}. See /docs in API for more details",
+        "URL": request.url,
+        "base_url": request.base_url
+    }
 
-    return {"message":f"Welcome to Library API in {settings.MODE.environment}. See /docs in API for more details"}
+from pydantic import BaseModel
+
+class RootInput(BaseModel):
+    check: str
+
+@app.post("/")
+async def hello_api(request: Request, body: RootInput):
+    environment = settings.MODE["environment"]
+    return {
+        "message":f"Welcome to Library API in {environment}. See /docs in API for more details",
+        "URL": request.url,
+        "Body": body
+    }
 
 

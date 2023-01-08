@@ -76,3 +76,17 @@ class DeleteAuthor(UseCaseWrapper):
         return author
 
 
+@zope.interface.implementer(IUseCase)
+class ReadBooksOfAuthor(UseCaseWrapper):
+
+    def __init__(self):
+        UseCaseWrapper.__init__(self)
+        self.author_repository: IAuthorRepository = self.inject(IAuthorRepository, "persistence")
+
+    def execute(self, author_id: int):
+        found_author = self.author_repository.get_author_by_id(author_id)
+        if found_author is None:
+            raise KeyDoesNotExist(f"No author for id {author_id}")
+        
+        books = self.author_repository.get_books_of_author(found_author)
+        return books

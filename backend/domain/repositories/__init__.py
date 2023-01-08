@@ -39,6 +39,12 @@ class IAuthorRepository(zope.interface.Interface):
         """
         ...
 
+    def get_books_of_author(self, author: Author) -> Sequence[Book]:
+        """
+        Get all books of an author
+        """
+        ...
+
 
 class IBookRepository(zope.interface.Interface):
     """
@@ -84,6 +90,12 @@ class IBookRepository(zope.interface.Interface):
     def delete_book(self, book_id: int):
         """
         Delete the book of id
+        """
+        ...
+
+    def get_copies(self, book_id: int) -> Sequence[Copy]:
+        """
+        Get all copies of a book
         """
         ...
 

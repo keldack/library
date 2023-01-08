@@ -31,6 +31,27 @@ class CreateBook(UseCaseWrapper):
 
 
 @zope.interface.implementer(IUseCase)
+class UpdateBook(UseCaseWrapper):
+
+    def __init__(self):
+        UseCaseWrapper.__init__(self)
+        self.book_repository: IBookRepository = self.inject(IBookRepository, "persistence")
+        self.author_repository: IAuthorRepository = self.inject(IAuthorRepository, "persistence")
+
+    def execute(self, book: Book):
+        #1 - Check book already exists
+        found_book = self.book_repository.get_book_by_id(book.id)
+        if found_book is None:
+            raise KeyDoesNotExist(f"No author for id {book.id}")
+
+        #2 - Rules - we check authors exist
+        check_authors_of_book_exist(book, self.author_repository)
+
+        self.book_repository.update_book(book)
+        return book
+
+
+@zope.interface.implementer(IUseCase)
 class ReadBooks(UseCaseWrapper):
 
     def __init__(self):
@@ -52,21 +73,6 @@ class ReadBook(UseCaseWrapper):
         book = self.book_repository.get_book_by_id(book_id)
         if book is None:
             raise KeyDoesNotExist(f"No book for id {book_id}")
-        return book
-
-
-@zope.interface.implementer(IUseCase)
-class UpdateBook(UseCaseWrapper):
-
-    def __init__(self):
-        UseCaseWrapper.__init__(self)
-        self.book_repository: IBookRepository = self.inject(IBookRepository, "persistence")
-
-    def execute(self, book: Book):
-        found_book = self.book_repository.get_book_by_id(book.id)
-        if found_book is None:
-            raise KeyDoesNotExist(f"No author for id {book.id}")
-        self.book_repository.update_book(book)
         return book
 
 
@@ -98,8 +104,8 @@ class GetCopiesOfBook(UseCaseWrapper):
         if found_book is None:
             raise KeyDoesNotExist(f"No book for id {book_id}")
         
-        author = self.book_repository.delete_author(book_id)
-        return author
+        copies = self.book_repository.get_copies(found_book)
+        return copies
 
 
 

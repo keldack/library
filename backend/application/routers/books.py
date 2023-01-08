@@ -1,4 +1,4 @@
-from fastapi import APIRouter, HTTPException, status
+from fastapi import APIRouter, HTTPException, status, Request, Response
 
 from application.schemas.books import BookInputSchema
 from domain.models import Book
@@ -28,16 +28,17 @@ async def get_book_by_id(book_id: int):
 
 
 @router.post("", status_code=status.HTTP_201_CREATED)
-async def create_book(schema: BookInputSchema):
-    """Modify a book"""
-
+async def create_book(request: Request, response: Response, schema: BookInputSchema):
+    """Create a book"""
+    
     book: Book = schema.to_domain()
     book = CreateBook().execute(book)
+    response.headers["Location"] = f"{request.base_url}books/{book.id}"
     return book.to_schema()
     
 
 @router.put("/{book_id}")
-async def create_and_modify_book(book_id: str, schema: BookInputSchema):
+async def modify_book(book_id: str, schema: BookInputSchema):
     """Modify a book"""
     try:
         book: Book = schema.to_domain()

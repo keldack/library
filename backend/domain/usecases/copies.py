@@ -2,7 +2,7 @@ import zope.interface
 from domain.interfaces import IUseCase
 from domain.usecases import UseCaseWrapper
 from domain.models import Copy
-from domain.repositories import ICopyRepository, IBookRepository
+from domain.providers import ICopyProvider, IBookProvider
 from domain.usecases.exceptions import KeyDoesNotExist
 
 @zope.interface.implementer(IUseCase)
@@ -11,8 +11,8 @@ class CreateCopy(UseCaseWrapper):
 
     def __init__(self):
         UseCaseWrapper.__init__(self)
-        self.copy_repository: ICopyRepository = self.inject(ICopyRepository, "persistence")
-        self.book_repository: IBookRepository = self.inject(IBookRepository, "persistence")
+        self.copy_repository: ICopyProvider = self.inject(ICopyProvider, "persistence")
+        self.book_repository: IBookProvider = self.inject(IBookProvider, "persistence")
 
     def execute(self, copy: Copy):
         found_book = self.book_repository.get_book_by_id(copy.book.id)
@@ -28,7 +28,7 @@ class ReadCopies(UseCaseWrapper):
 
     def __init__(self):
         UseCaseWrapper.__init__(self)
-        self.copy_repository: ICopyRepository = self.inject(ICopyRepository, "persistence")
+        self.copy_repository: ICopyProvider = self.inject(ICopyProvider, "persistence")
 
     def execute(self):
         return self.copy_repository.get_all_copies()
@@ -39,7 +39,7 @@ class ReadCopy(UseCaseWrapper):
 
     def __init__(self):
         UseCaseWrapper.__init__(self)
-        self.copy_repository: ICopyRepository = self.inject(ICopyRepository, "persistence")
+        self.copy_repository: ICopyProvider = self.inject(ICopyProvider, "persistence")
 
     def execute(self, copy_id: int):
         copy: Copy = self.copy_repository.get_copy_by_id(copy_id)
@@ -53,7 +53,7 @@ class PatchCopy(UseCaseWrapper):
 
     def __init__(self):
         UseCaseWrapper.__init__(self)
-        self.copy_repository: ICopyRepository = self.inject(ICopyRepository, "persistence")
+        self.copy_repository: ICopyProvider = self.inject(ICopyProvider, "persistence")
 
     def execute(self, copy: Copy):
         found_copy = self.copy_repository.get_copy_by_id(copy.id)
@@ -69,7 +69,7 @@ class DeleteCopy(UseCaseWrapper):
 
     def __init__(self):
         UseCaseWrapper.__init__(self)
-        self.copy_repository: ICopyRepository = self.inject(ICopyRepository, "persistence")
+        self.copy_repository: ICopyProvider = self.inject(ICopyProvider, "persistence")
 
     def execute(self, copy_id: int):
         found_author = self.copy_repository.get_copy_by_id(copy_id)

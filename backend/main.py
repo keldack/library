@@ -21,27 +21,9 @@ app.include_router(copies_router)
 app.include_router(checkouts_router)
 
 
-@app.get("/")
+@app.get("/") 
 async def hello_api(request: Request):
     environment = settings.MODE["environment"]
     return {
         "message":f"Welcome to Library API in {environment}. See /docs in API for more details",
-        "URL": request.url,
-        "base_url": request.base_url
     }
-
-from pydantic import BaseModel
-
-class RootInput(BaseModel):
-    check: str
-
-@app.post("/")
-async def hello_api(request: Request, body: RootInput):
-    environment = settings.MODE["environment"]
-    return {
-        "message":f"Welcome to Library API in {environment}. See /docs in API for more details",
-        "URL": request.url,
-        "Body": body
-    }
-
-

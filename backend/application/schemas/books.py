@@ -1,9 +1,9 @@
+from __future__ import annotations
 from typing import Sequence, Optional, List
 from pydantic import BaseModel
 import zope.interface
 
-from application.schemas import IInputSchema, IOutputSchema
-from application.schemas.authors import AuthorSchema
+from application.schemas import IInputSchema
 from domain.models import Author, Book
 
 
@@ -27,12 +27,21 @@ class BookInputSchema(BaseModel):
         )
 
 
-@zope.interface.implementer(IOutputSchema)
-class BookOutputSchema(BaseModel):
+# Output schemas
+class BookBaseSchema(BaseModel):
     """
     Schema used to get books information
     """
     id: int
     isbn: str
     title: str
-    authors = list[AuthorSchema]
+    
+
+from application.schemas.authors import AuthorBaseSchema
+
+class BookInfoSchema(BookBaseSchema):
+    
+    authors: "List[AuthorBaseSchema]"
+
+BookInfoSchema.update_forward_refs()
+

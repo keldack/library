@@ -2,13 +2,13 @@ import zope.interface
 from typing import Sequence
 from wired import service_factory
 
-from application.persistence.memory import MemoryDatabase
+from commons.application.memory import MemoryDatabase
 
-from domain.repositories import IAuthorRepository, IBookRepository, ICopyRepository, ICheckoutRepository
+from domain.providers import IAuthorProvider, IBookProvider, ICopyProvider, ICheckoutProvider
 from domain.models import Author, Book, Copy, Checkout
 
-@service_factory(for_=IAuthorRepository, name="memory")
-@zope.interface.implementer(IAuthorRepository)
+@service_factory(for_=IAuthorProvider, name="memory")
+@zope.interface.implementer(IAuthorProvider)
 class AuthorRepository:
 
     @classmethod
@@ -28,7 +28,10 @@ class AuthorRepository:
         """
         Returns specific author for id
         """
-        return self.memory_db.get_entity(Author, author_id)
+        author: Author = self.memory_db.get_entity(Author, author_id)
+        if author:
+            author.books = self.memory_db.get_relations(author, "author")
+        return author
 
     def create_author(self, author: Author) -> Author:
         """
@@ -60,8 +63,8 @@ class AuthorRepository:
         return self.memory_db.get_relations(author, "author")
 
 
-@service_factory(for_=IBookRepository, name="memory")
-@zope.interface.implementer(IBookRepository)
+@service_factory(for_=IBookProvider, name="memory")
+@zope.interface.implementer(IBookProvider)
 class BookRepository():
     """
     Interface for book repository actions
@@ -132,8 +135,8 @@ class BookRepository():
         return copies
 
 
-@service_factory(for_=ICopyRepository, name="memory")
-@zope.interface.implementer(ICopyRepository)
+@service_factory(for_=ICopyProvider, name="memory")
+@zope.interface.implementer(ICopyProvider)
 class CopyRepository():
     """
     Interface for copy repository actions
@@ -183,8 +186,8 @@ class CopyRepository():
         return self.memory_db.get_entity(Copy, copy_id)
         
 
-@service_factory(for_=ICheckoutRepository, name="memory")
-@zope.interface.implementer(ICheckoutRepository)
+@service_factory(for_=ICheckoutProvider, name="memory")
+@zope.interface.implementer(ICheckoutProvider)
 class CheckoutRepository():
     """
     Interface for checkout repository actions

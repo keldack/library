@@ -11,11 +11,15 @@ curl -X POST -H "Content-Type: application/json" -d '{"name":"Michel Perrin"}' h
 
 echo "Update author 1"
 curl -X PUT -H "Content-Type: application/json" -d '{"name":"Victor Hugo"}' http://127.0.0.1:8000/authors/1; echo
-
 echo "Create author 5"
 curl -X POST -H "Content-Type: application/json" -d '{"name":"Auteur à virer"}' http://127.0.0.1:8000/authors; echo
 echo "Delete author 5"
 curl -X DELETE -H "Content-Type: application/json" -d '' http://127.0.0.1:8000/authors/5; echo
+
+echo "Get all authors"
+curl -X GET -H "Content-Type: application/json" -d '' http://127.0.0.1:8000/authors; echo
+echo "Get author 1"
+curl -X GET -H "Content-Type: application/json" -d '' http://127.0.0.1:8000/authors/1; echo
 
 
 # Create books

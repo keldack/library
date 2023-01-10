@@ -3,8 +3,8 @@ import re
 from venusian import Scanner
 from wired import ServiceRegistry
 
-import domain
-import application
+import domain as domain
+import application as application
 
 class LibraryRegistry:
 

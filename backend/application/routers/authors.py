@@ -1,8 +1,8 @@
 from fastapi import APIRouter, status, HTTPException, Request, Response
 from typing import List
 
-from application.schemas.authors import AuthorSchema
-from application.schemas.books import BookOutputSchema
+from application.schemas.authors import AuthorInputSchema, AuthorBaseSchema, AuthorInfoSchema
+from application.schemas.books import BookBaseSchema
 
 from domain.models import Author
 from domain.usecases.authors import CreateAuthor, ReadAuthors, ReadAuthor, UpdateAuthor, DeleteAuthor, ReadBooksOfAuthor
@@ -13,14 +13,14 @@ router = APIRouter(
     tags=["authors"]
 )
 
-@router.get("", response_model=List[AuthorSchema])
+@router.get("", response_model=List[AuthorBaseSchema])
 async def get_all_authors():
     """Get all authors"""
     authors = ReadAuthors().execute()
     return [author.to_schema() for author in authors]
 
 
-@router.get("/{author_id}", response_model=AuthorSchema)
+@router.get("/{author_id}", response_model=AuthorInfoSchema)
 async def get_author_by_id(author_id: int):
     """Get an author by its id"""
     try:
@@ -33,9 +33,9 @@ async def get_author_by_id(author_id: int):
 @router.post(
     "", 
     status_code=status.HTTP_201_CREATED,
-    response_model=AuthorSchema
+    response_model=AuthorBaseSchema
     )
-async def create_author(request: Request, response: Response, schema: AuthorSchema) -> AuthorSchema:
+async def create_author(request: Request, response: Response, schema: AuthorInputSchema) -> AuthorBaseSchema:
     """Create an author"""
     author: Author = schema.to_domain() 
     author = CreateAuthor().execute(author)
@@ -43,8 +43,8 @@ async def create_author(request: Request, response: Response, schema: AuthorSche
     return author
 
 
-@router.put("/{author_id}", response_model=AuthorSchema)
-async def modify_author(author_id: int, schema: AuthorSchema) -> AuthorSchema:
+@router.put("/{author_id}", response_model=AuthorBaseSchema)
+async def modify_author(author_id: int, schema: AuthorInputSchema) -> AuthorBaseSchema:
     """Modify an author"""
     
     try:
@@ -66,7 +66,7 @@ async def delete_author(author_id: int):
         raise HTTPException(status_code=404, detail=str(exception))
 
 
-@router.get("/{author_id}/books", response_model=List[BookOutputSchema])
+@router.get("/{author_id}/books", response_model=List[BookBaseSchema])
 async def get_books_of_author(author_id: int):
     """Get all books of an author id"""
     try:

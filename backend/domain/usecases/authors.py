@@ -2,7 +2,7 @@ import zope.interface
 from domain.interfaces import IUseCase
 from domain.usecases import UseCaseWrapper
 from domain.models import Author
-from domain.repositories import IAuthorRepository
+from domain.providers import IAuthorProvider
 from domain.usecases.exceptions import KeyDoesNotExist
 
 
@@ -12,7 +12,7 @@ class CreateAuthor(UseCaseWrapper):
 
     def __init__(self):
         UseCaseWrapper.__init__(self)
-        self.author_repository: IAuthorRepository = self.inject(IAuthorRepository, "persistence")
+        self.author_repository: IAuthorProvider = self.inject(IAuthorProvider, "persistence")
 
     def execute(self, author: Author):
 
@@ -25,7 +25,7 @@ class ReadAuthors(UseCaseWrapper):
 
     def __init__(self):
         UseCaseWrapper.__init__(self)
-        self._author_repository: IAuthorRepository = self.inject(IAuthorRepository, "persistence")
+        self._author_repository: IAuthorProvider = self.inject(IAuthorProvider, "persistence")
 
     def execute(self):
         return self._author_repository.get_all_authors()
@@ -36,7 +36,7 @@ class ReadAuthor(UseCaseWrapper):
 
     def __init__(self):
         UseCaseWrapper.__init__(self)
-        self._author_repository: IAuthorRepository = self.inject(IAuthorRepository, "persistence")
+        self._author_repository: IAuthorProvider = self.inject(IAuthorProvider, "persistence")
 
     def execute(self, author_id: int):
         author = self._author_repository.get_author_by_id(author_id)
@@ -50,7 +50,7 @@ class UpdateAuthor(UseCaseWrapper):
 
     def __init__(self):
         UseCaseWrapper.__init__(self)
-        self._author_repository: IAuthorRepository = self.inject(IAuthorRepository, "persistence")
+        self._author_repository: IAuthorProvider = self.inject(IAuthorProvider, "persistence")
 
     def execute(self, author: Author):
         found_author = self._author_repository.get_author_by_id(author.id)
@@ -65,7 +65,7 @@ class DeleteAuthor(UseCaseWrapper):
 
     def __init__(self):
         UseCaseWrapper.__init__(self)
-        self._author_repository: IAuthorRepository = self.inject(IAuthorRepository, "persistence")
+        self._author_repository: IAuthorProvider = self.inject(IAuthorProvider, "persistence")
 
     def execute(self, author_id):
         found_author = self._author_repository.get_author_by_id(author_id)
@@ -81,7 +81,7 @@ class ReadBooksOfAuthor(UseCaseWrapper):
 
     def __init__(self):
         UseCaseWrapper.__init__(self)
-        self.author_repository: IAuthorRepository = self.inject(IAuthorRepository, "persistence")
+        self.author_repository: IAuthorProvider = self.inject(IAuthorProvider, "persistence")
 
     def execute(self, author_id: int):
         found_author = self.author_repository.get_author_by_id(author_id)

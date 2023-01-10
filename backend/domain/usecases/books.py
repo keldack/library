@@ -3,11 +3,11 @@ import zope.interface
 from domain.interfaces import IUseCase
 from domain.usecases import UseCaseWrapper
 from domain.models import Book
-from domain.repositories import IBookRepository, IAuthorRepository
+from domain.providers import IBookProvider, IAuthorProvider
 from domain.usecases.exceptions import KeyDoesNotExist
 
 
-def check_authors_of_book_exist(book :Book, author_repository: IAuthorRepository):
+def check_authors_of_book_exist(book :Book, author_repository: IAuthorProvider):
     for author in book.authors:
         if not author_repository.get_author_by_id(author.id):
             raise KeyDoesNotExist(f"No author for id {author.id}")
@@ -19,8 +19,8 @@ class CreateBook(UseCaseWrapper):
 
     def __init__(self):
         UseCaseWrapper.__init__(self)
-        self.book_repository: IBookRepository = self.inject(IBookRepository, "persistence")
-        self.author_repository: IAuthorRepository = self.inject(IAuthorRepository, "persistence")
+        self.book_repository: IBookProvider = self.inject(IBookProvider, "persistence")
+        self.author_repository: IAuthorProvider = self.inject(IAuthorProvider, "persistence")
 
     def execute(self, book: Book):
 
@@ -36,8 +36,8 @@ class UpdateBook(UseCaseWrapper):
 
     def __init__(self):
         UseCaseWrapper.__init__(self)
-        self.book_repository: IBookRepository = self.inject(IBookRepository, "persistence")
-        self.author_repository: IAuthorRepository = self.inject(IAuthorRepository, "persistence")
+        self.book_repository: IBookProvider = self.inject(IBookProvider, "persistence")
+        self.author_repository: IAuthorProvider = self.inject(IAuthorProvider, "persistence")
 
     def execute(self, book: Book):
         #1 - Check book already exists
@@ -57,7 +57,7 @@ class ReadBooks(UseCaseWrapper):
 
     def __init__(self):
         UseCaseWrapper.__init__(self)
-        self.book_repository: IBookRepository = self.inject(IBookRepository, "persistence")
+        self.book_repository: IBookProvider = self.inject(IBookProvider, "persistence")
 
     def execute(self):
         return self.book_repository.get_all_books()
@@ -69,7 +69,7 @@ class ReadBook(UseCaseWrapper):
 
     def __init__(self):
         UseCaseWrapper.__init__(self)
-        self.book_repository: IBookRepository = self.inject(IBookRepository, "persistence")
+        self.book_repository: IBookProvider = self.inject(IBookProvider, "persistence")
 
     def execute(self, book_id: int) -> Book:
         book = self.book_repository.get_book_by_id(book_id)
@@ -84,7 +84,7 @@ class DeleteBook(UseCaseWrapper):
 
     def __init__(self):
         UseCaseWrapper.__init__(self)
-        self.book_repository: IBookRepository = self.inject(IBookRepository, "persistence")
+        self.book_repository: IBookProvider = self.inject(IBookProvider, "persistence")
 
     def execute(self, book_id: int):
         found_book = self.book_repository.get_book_by_id(book_id)
@@ -100,7 +100,7 @@ class GetCopiesOfBook(UseCaseWrapper):
 
     def __init__(self):
         UseCaseWrapper.__init__(self)
-        self.book_repository: IBookRepository = self.inject(IBookRepository, "persistence")
+        self.book_repository: IBookProvider = self.inject(IBookProvider, "persistence")
 
     def execute(self, book_id: int):
         found_book = self.book_repository.get_book_by_id(book_id)

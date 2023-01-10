@@ -4,7 +4,7 @@ import zope.interface
 from domain.interfaces import IUseCase
 from domain.usecases import UseCaseWrapper
 from domain.models import Checkout
-from domain.repositories import ICheckoutRepository
+from domain.providers import ICheckoutProvider
 from domain.usecases.exceptions import KeyDoesNotExist
 
 @zope.interface.implementer(IUseCase)
@@ -13,7 +13,7 @@ class CreateCheckout(UseCaseWrapper):
 
     def __init__(self):
         UseCaseWrapper.__init__(self)
-        self.checkout_repository: ICheckoutRepository = self.inject(ICheckoutRepository, "persistence")
+        self.checkout_repository: ICheckoutProvider = self.inject(ICheckoutProvider, "persistence")
 
     def execute(self, checkout: Checkout):
 
@@ -26,7 +26,7 @@ class ReadCheckouts(UseCaseWrapper):
 
     def __init__(self):
         UseCaseWrapper.__init__(self)
-        self.checkout_repository: ICheckoutRepository = self.inject(ICheckoutRepository, "persistence")
+        self.checkout_repository: ICheckoutProvider = self.inject(ICheckoutProvider, "persistence")
 
     def execute(self):
         return self.checkout_repository.get_all_checkouts()
@@ -37,7 +37,7 @@ class ReadCheckout(UseCaseWrapper):
 
     def __init__(self):
         UseCaseWrapper.__init__(self)
-        self.checkout_repository: ICheckoutRepository = self.inject(ICheckoutRepository, "persistence")
+        self.checkout_repository: ICheckoutProvider = self.inject(ICheckoutProvider, "persistence")
 
     def execute(self, checkout_id: int):
         checkout: Checkout = self.checkout_repository.get_checkout_by_id(checkout_id)
@@ -51,7 +51,7 @@ class PatchCheckout(UseCaseWrapper):
 
     def __init__(self):
         UseCaseWrapper.__init__(self)
-        self.checkout_repository: ICheckoutRepository = self.inject(ICheckoutRepository, "persistence")
+        self.checkout_repository: ICheckoutProvider = self.inject(ICheckoutProvider, "persistence")
 
     def execute(self, checkout: Checkout):
         found_checkout = self.checkout_repository.get_checkout_by_id(checkout.id)
@@ -66,7 +66,7 @@ class ProlongateCheckout(UseCaseWrapper):
 
     def __init__(self):
         UseCaseWrapper.__init__(self)
-        self.checkout_repository: ICheckoutRepository = self.inject(ICheckoutRepository, "persistence")
+        self.checkout_repository: ICheckoutProvider = self.inject(ICheckoutProvider, "persistence")
 
     def execute(self, checkout: Checkout):
         found_checkout = self.checkout_repository.get_checkout_by_id(checkout.id)
@@ -81,7 +81,7 @@ class DeleteCheckout(UseCaseWrapper):
 
     def __init__(self):
         UseCaseWrapper.__init__(self)
-        self.checkout_repository: ICheckoutRepository = self.inject(ICheckoutRepository, "persistence")
+        self.checkout_repository: ICheckoutProvider = self.inject(ICheckoutProvider, "persistence")
 
     def execute(self, checkout: Checkout):
         found_checkout = self.checkout_repository.get_checkout_by_id(checkout.id)

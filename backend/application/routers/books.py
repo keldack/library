@@ -1,7 +1,7 @@
 from fastapi import APIRouter, HTTPException, status, Request, Response
 
-from application.schemas.books import BookInputSchema, BookOutputSchema
-from application.schemas.authors import AuthorSchema
+from application.schemas.books import BookInputSchema, BookBaseSchema, BookInfoSchema
+from application.schemas.authors import AuthorBaseSchema
 from domain.models import Book
 from domain.usecases.books import CreateBook, ReadBooks, ReadBook, UpdateBook, DeleteBook, GetCopiesOfBook
 from domain.usecases.exceptions import KeyDoesNotExist
@@ -18,19 +18,19 @@ async def get_all_books():
     return [book.to_schema() for book in books]
 
 
-@router.get("/{book_id}", response_model=BookOutputSchema)
+@router.get("/{book_id}", response_model=BookInfoSchema)
 async def get_book_by_id(book_id: int):
     """Get a book by its id"""
     try:
         book = ReadBook().execute(book_id)
         
         # Special remove ok books reference for iside authors
-        schema = BookOutputSchema(
+        schema = BookInfoSchema(
             id=book.id, 
             isbn=book.isbn, 
             title=book.title,
             authors = [
-                AuthorSchema(id=author.id, name = author.name) for author in book.authors
+                AuthorBaseSchema(id=author.id, name = author.name) for author in book.authors
             ]
         )
         print(schema)
@@ -40,7 +40,7 @@ async def get_book_by_id(book_id: int):
         raise HTTPException(status_code=404, detail=str(exception))
 
 
-@router.post("", status_code=status.HTTP_201_CREATED)
+@router.post("", status_code=status.HTTP_201_CREATED, response_model=BookBaseSchema)
 async def create_book(request: Request, response: Response, schema: BookInputSchema):
     """Create a book"""
     
@@ -53,7 +53,7 @@ async def create_book(request: Request, response: Response, schema: BookInputSch
         raise HTTPException(status_code=400, detail=str(exception))
     
 
-@router.put("/{book_id}")
+@router.put("/{book_id}", response_model=BookBaseSchema)
 async def modify_book(book_id: str, schema: BookInputSchema):
     """Modify a book"""
     try:

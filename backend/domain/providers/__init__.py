@@ -4,7 +4,7 @@ from typing import Sequence
 from domain.models import Author, Book, Copy, Checkout
 
 
-class IAuthorRepository(zope.interface.Interface):
+class IAuthorProvider(zope.interface.Interface):
     """
     Interface for author repository actions
     """
@@ -46,7 +46,7 @@ class IAuthorRepository(zope.interface.Interface):
         ...
 
 
-class IBookRepository(zope.interface.Interface):
+class IBookProvider(zope.interface.Interface):
     """
     Interface for book repository actions
     """
@@ -100,7 +100,7 @@ class IBookRepository(zope.interface.Interface):
         ...
 
 
-class ICopyRepository(zope.interface.Interface):
+class ICopyProvider(zope.interface.Interface):
     """
     Interface for copies repository actions
     """
@@ -134,7 +134,7 @@ class ICopyRepository(zope.interface.Interface):
         """
 
     
-class ICheckoutRepository(zope.interface.Interface):
+class ICheckoutProvider(zope.interface.Interface):
     """
     Interface for checkouts repository actions
     """

@@ -128,7 +128,7 @@ class ICopyProvider(zope.interface.Interface):
         Delete the copy from the library
         """
 
-    def return_copy(self, copy_id: int):
+    def return_checkouted_copy(self, copy_id: int):
         """
         Make the return to the library of checkout copy
         """

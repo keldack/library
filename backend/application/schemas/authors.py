@@ -1,5 +1,5 @@
 from __future__ import annotations
-from typing import List
+from typing import List, Optional
 
 from pydantic import BaseModel
 import zope.interface
@@ -25,11 +25,15 @@ class AuthorBaseSchema(BaseModel):
     name: str
 
 
-from application.schemas.books import BookBaseSchema
+class LocalBookBaseSchema(BaseModel):
+
+    id: int
+    title: str
+
 
 class AuthorInfoSchema(AuthorBaseSchema):
 
-    books: "List[BookBaseSchema]"
+    books: Optional[List[LocalBookBaseSchema]]
 
-AuthorInfoSchema.update_forward_refs()
+
 

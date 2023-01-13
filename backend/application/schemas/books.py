@@ -4,6 +4,7 @@ from pydantic import BaseModel
 import zope.interface
 
 from application.schemas import IInputSchema
+from application.schemas.authors import AuthorBaseSchema
 from domain.models import Author, Book
 
 
@@ -37,11 +38,10 @@ class BookBaseSchema(BaseModel):
     title: str
     
 
-from application.schemas.authors import AuthorBaseSchema
 
 class BookInfoSchema(BookBaseSchema):
     
-    authors: "List[AuthorBaseSchema]"
+    authors: List[AuthorBaseSchema]
 
-BookInfoSchema.update_forward_refs()
+
 

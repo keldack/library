@@ -17,9 +17,9 @@ class CreateCopy(UseCaseWrapper):
     def execute(self, copy: Copy):
         found_book = self.book_repository.get_book_by_id(copy.book.id)
         if found_book is None:
-            raise KeyDoesNotExist(f"No book for id {copy.book.id}")
+            raise KeyDoesNotExist(f"Copy creation - No book for id {copy.book.id}")
 
-        self.copy_repository.create_copy(copy)
+        copy = self.copy_repository.create_copy(copy)
         return copy
 
 
@@ -44,7 +44,7 @@ class ReadCopy(UseCaseWrapper):
     def execute(self, copy_id: int):
         copy: Copy = self.copy_repository.get_copy_by_id(copy_id)
         if copy is None:
-            raise KeyDoesNotExist(f"No author for id {copy_id}")
+            raise KeyDoesNotExist(f"No copy for id {copy_id}")
         return copy
 
 

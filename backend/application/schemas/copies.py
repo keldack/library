@@ -3,6 +3,7 @@ from pydantic import BaseModel
 import zope.interface
 
 from application.schemas import IInputSchema
+from application.schemas.books import BookBaseSchema
 from domain.models import Copy, Book
 
 
@@ -13,14 +14,14 @@ class CopyInputSchema(BaseModel):
     """
     id: int | None = None
     place : Optional[str]
-    book: int
+    book_id: int
 
     def to_domain(self) -> Copy:
         
         return Copy(
             id = self.id, 
             place = self.place,
-            book = Book(id=self.book)
+            book = Book(id=self.book_id)
         )
 
 
@@ -30,7 +31,7 @@ class PatchCopyInputSchema(BaseModel):
     Schema used for creation and update of a copy 
     """
     
-    place : Optional[str]
+    place : str
 
     def to_domain(self) -> Copy:
         
@@ -39,4 +40,19 @@ class PatchCopyInputSchema(BaseModel):
             place = self.place,
         )
 
+
+# Output schemas
+class CopyBaseSchema(BaseModel):
+    """
+    Schema used to get copy base schema
+    """
+    id: int | None = None
+    place : Optional[str]
+
+
+class CopyInfoSchema(CopyBaseSchema):
+    """
+    Schema used to get copy information with book
+    """
+    book: BookBaseSchema
 

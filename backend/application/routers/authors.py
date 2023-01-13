@@ -18,6 +18,7 @@ async def get_all_authors():
     """Get all authors"""
     authors = ReadAuthors().execute()
     return [author.to_schema() for author in authors]
+    
 
 
 @router.get("/{author_id}", response_model=AuthorInfoSchema)

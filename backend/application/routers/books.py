@@ -1,3 +1,4 @@
+from typing import List
 from fastapi import APIRouter, HTTPException, status, Request, Response
 
 from application.schemas.books import BookInputSchema, BookBaseSchema, BookInfoSchema
@@ -11,7 +12,7 @@ router = APIRouter(
     tags=["books"]
 )
 
-@router.get("")
+@router.get("", response_model=List[BookBaseSchema])
 async def get_all_books():
     """Get all books"""
     books = ReadBooks().execute()
@@ -40,7 +41,7 @@ async def get_book_by_id(book_id: int):
         raise HTTPException(status_code=404, detail=str(exception))
 
 
-@router.post("", status_code=status.HTTP_201_CREATED, response_model=BookBaseSchema)
+@router.post("", status_code=status.HTTP_201_CREATED, response_model=BookInfoSchema)
 async def create_book(request: Request, response: Response, schema: BookInputSchema):
     """Create a book"""
     
@@ -53,7 +54,7 @@ async def create_book(request: Request, response: Response, schema: BookInputSch
         raise HTTPException(status_code=400, detail=str(exception))
     
 
-@router.put("/{book_id}", response_model=BookBaseSchema)
+@router.put("/{book_id}", response_model=BookInfoSchema)
 async def modify_book(book_id: str, schema: BookInputSchema):
     """Modify a book"""
     try:

@@ -4,17 +4,18 @@ from pydantic import BaseModel
 import zope.interface
 
 from application.schemas import IInputSchema
-from domain.models import Checkout, Copy
+from application.schemas.copies import CopyBaseSchema
+from application.schemas.books import BookBaseSchema
+from domain.models import Checkout, Copy, CheckoutStatus
 
 
 @zope.interface.implementer(IInputSchema)
-class CheckoutSchema(BaseModel):
+class CheckoutInputSchema(BaseModel):
     """
     Schema used for creation and update of a book from application
     """
     id: int | None = None
     copy_id: int
-    on_date: date
     borrower: str
 
     def to_domain(self) -> Checkout:
@@ -22,7 +23,22 @@ class CheckoutSchema(BaseModel):
         return Checkout(
             id = self.id, 
             borrower = self.borrower,
-            on_date = self.on_date,
-            copy = Copy(id=self.copy_id)
+            copy = Copy(id=self.copy_id),
+            state = CheckoutStatus.OPENED
         )
+
+
+# Output Schemas
+class CheckoutBaseSchema(BaseModel):
+
+    id: int
+    on_date: date
+    due_date: date
+    status: str
+    copy_: CopyBaseSchema
+
+class CheckoutInfoSchema(CheckoutBaseSchema):
+    
+    book: BookBaseSchema
+
 

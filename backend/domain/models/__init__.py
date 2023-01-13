@@ -1,59 +1,74 @@
 from __future__ import annotations
+from typing import Optional, Sequence
 from enum import Enum
 from dataclasses import dataclass, KW_ONLY, field
-from typing import Set, Optional, Sequence
 import datetime
 
+
+class Entity:
+   
+    def to_schema(self):        
+        return self.__dict__.copy()
+
+
 @dataclass
-class Author:
+class Author(Entity):
 
     _: KW_ONLY
     id: int = None
     name: Optional[str] = field(default_factory=str)
     books: Optional[Sequence[Book]] = field(default_factory=list)
-
+    
     def to_schema(self):
-        return self.__dict__.copy()
+        schema = Entity.to_schema(self) 
+        schema["books"] = [book.to_schema() for book in self.books]
+        return schema
 
 @dataclass
-class Book:
+class Book(Entity):
 
     _: KW_ONLY
     id: int = None
     isbn: Optional[str] = field(default_factory=str)
     title: Optional[str] = field(default_factory=str)
-    authors: Optional[Set[Author]] = field(default_factory=list)
+    authors: Optional[Sequence[Author]] = field(default_factory=list)
 
     def to_schema(self):
-        return self.__dict__.copy()
+        schema = Entity.to_schema(self) 
+        schema["authors"] = [author.to_schema() for author in self.authors]
+        return schema
 
-
+    
 @dataclass
-class Copy:
+class Copy(Entity):
 
     _: KW_ONLY
     id: int = None
-    book: Optional[Book] = None
+    book: Book = None
     place: Optional[str] = field(default_factory=str)
 
     def to_schema(self):
-        return self.__dict__.copy()
-
-
+        schema = Entity.to_schema(self) 
+        if self.book:
+            schema["book"] = self.book.to_schema()
+        return schema
+    
 class CheckoutStatus(str, Enum):
     OPENED = "Opened"
     CLOSED = "Closed"
 
 @dataclass
-class Checkout:
+class Checkout(Entity):
 
     _: KW_ONLY
     id: int = None
     copy: Copy
     on_date: datetime.date = field(default=datetime.date.today())
+    due_date: datetime.date = field(default=datetime.date.today() + datetime.timedelta(days=15))
     borrower: str
     state: CheckoutStatus
 
-
     def to_schema(self):
-        return self.__dict__.copy()
+        schema = Entity.to_schema(self) 
+        schema["copy"] = self.copy.to_schema()
+        return schema

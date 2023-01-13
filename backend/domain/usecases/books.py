@@ -43,7 +43,7 @@ class UpdateBook(UseCaseWrapper):
         #1 - Check book already exists
         found_book = self.book_repository.get_book_by_id(book.id)
         if found_book is None:
-            raise KeyDoesNotExist(f"No author for id {book.id}")
+            raise KeyDoesNotExist(f"No book for id {book.id}")
 
         #2 - Rules - we check authors exist
         check_authors_of_book_exist(book, self.author_repository)

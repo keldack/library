@@ -1,6 +1,6 @@
 from fastapi import APIRouter, HTTPException, status, Request, Response
 
-from application.schemas.copies import CopyInputSchema, PatchCopyInputSchema
+from application.schemas.copies import CopyInputSchema, PatchCopyInputSchema, CopyBaseSchema, CopyInfoSchema
 from domain.models import Book, Copy
 from domain.usecases.copies import CreateCopy, ReadCopies, ReadCopy, PatchCopy, DeleteCopy
 from domain.usecases.exceptions import KeyDoesNotExist
@@ -14,24 +14,25 @@ router = APIRouter(
     tags=["copies"]
 )
 
-@router.get("")
-async def get_all_copies():
-    """Get all copies"""
-    copies = ReadCopies().execute()
-    return [copy.to_schema() for copy in copies]
+# @router.get("")
+# async def get_all_copies():
+#     """Get all copies"""
+#     copies = ReadCopies().execute()
+    # return [copy.to_schema() for copy in copies]
 
 
-@router.get("/{copy_id}")
+@router.get("/{copy_id}", response_model=CopyInfoSchema)
 async def get_copy_by_id(copy_id: int):
     """Get a copy of a book by its id"""
     try:
         copy = ReadCopy().execute(copy_id)
+        print (copy.to_schema())
         return copy.to_schema()
     except KeyDoesNotExist as exception:
         raise HTTPException(status_code=404, detail=str(exception))
 
 
-@router.post("", status_code=status.HTTP_201_CREATED)
+@router.post("", status_code=status.HTTP_201_CREATED, response_model=CopyInfoSchema)
 async def create_copy(request: Request, response: Response, schema: CopyInputSchema):
     """Create a copy"""
     try:
@@ -43,7 +44,7 @@ async def create_copy(request: Request, response: Response, schema: CopyInputSch
         raise HTTPException(status_code=400, detail=str(exception))
 
 
-@router.patch("/{copy_id}")
+@router.patch("/{copy_id}", response_model=CopyInfoSchema)
 async def patch_copy(copy_id: int, schema: PatchCopyInputSchema):
     """Modify a copy"""
     try:

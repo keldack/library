@@ -1,8 +1,9 @@
+from typing import List
 from fastapi import APIRouter, HTTPException, status, Request, Response
 
-from application.schemas.checkout import CheckoutSchema
+from application.schemas.checkout import CheckoutInputSchema, CheckoutBaseSchema, CheckoutInfoSchema
 from domain.models import Checkout
-from domain.usecases.checkouts import CreateCheckout, ReadCheckout, ReadCheckouts, PatchCheckout, DeleteCheckout
+from domain.usecases.checkouts import CreateCheckout, ReadCheckout, ReadCheckouts, ModifyCheckout, ProlongateCheckout, DeleteCheckout
 from domain.usecases.exceptions import KeyDoesNotExist
 
 router = APIRouter()
@@ -14,13 +15,13 @@ router = APIRouter(
     tags=["checkouts"]
 )
 
-@router.get("")
+@router.get("", response_model=List[CheckoutBaseSchema])
 async def get_all_checkouts():
     """Get all checkouts"""
     checkouts = ReadCheckouts().execute()
     return [checkout.to_schema() for checkout in checkouts]
 
-@router.get("/{checkout_id}")
+@router.get("/{checkout_id}", response_model=CheckoutInfoSchema)
 async def get_checkout_by_id(checkout_id: int):
     """Get a checkout by its id"""
     try:
@@ -29,8 +30,9 @@ async def get_checkout_by_id(checkout_id: int):
     except KeyDoesNotExist as exception:
         raise HTTPException(status_code=404, detail=str(exception))
 
-@router.post("")
-async def create_checkout(request: Request, response: Response, schema: CheckoutSchema):
+
+@router.post("", status_code=status.HTTP_201_CREATED)
+async def create_checkout(request: Request, response: Response, schema: CheckoutInputSchema):
     """Create a checkout"""
     checkout: Checkout = schema.to_domain()
     checkout = CreateCheckout().execute(checkout)
@@ -38,8 +40,8 @@ async def create_checkout(request: Request, response: Response, schema: Checkout
     return checkout.to_schema()
 
 
-@router.patch("/{checkout_id}")
-async def modify_checkout(checkout_id: str, schema: CheckoutSchema):
+@router.put("/{checkout_id}")
+async def modify_checkout(checkout_id: str, schema: CheckoutInputSchema):
     """Modify a checkout for """
     try:
         checkout: Checkout = schema.to_domain()
@@ -49,7 +51,8 @@ async def modify_checkout(checkout_id: str, schema: CheckoutSchema):
     except KeyDoesNotExist as exception:
         raise HTTPException(status_code=404, detail=str(exception))        
 
-@router.delete("/{checkout_id}")
+
+@router.delete("/{checkout_id}", status_code=status.HTTP_204_NO_CONTENT)
 async def delete_checkout(checkout_id: str):
     """Delete a checkout"""
     try:

@@ -53,9 +53,6 @@ class Copy(Entity):
             schema["book"] = self.book.to_schema()
         return schema
     
-class CheckoutStatus(str, Enum):
-    OPENED = "Opened"
-    CLOSED = "Closed"
 
 @dataclass
 class Checkout(Entity):
@@ -64,11 +61,20 @@ class Checkout(Entity):
     id: int = None
     copy: Copy
     on_date: datetime.date = field(default=datetime.date.today())
-    due_date: datetime.date = field(default=datetime.date.today() + datetime.timedelta(days=15))
+    return_date: datetime.date = field(default=datetime.date.today() + datetime.timedelta(days=15))
     borrower: str
-    state: CheckoutStatus
 
     def to_schema(self):
         schema = Entity.to_schema(self) 
         schema["copy"] = self.copy.to_schema()
         return schema
+
+    def prolongate(self, days:int):
+        self.return_date += datetime.timedelta(days=days)
+
+@dataclass
+class Prolongation(Entity):
+
+    _: KW_ONLY
+    checkout_id: int
+    days: int

@@ -72,9 +72,9 @@ class DeleteCopy(UseCaseWrapper):
         self.copy_repository: ICopyProvider = self.inject(ICopyProvider, "persistence")
 
     def execute(self, copy_id: int):
-        found_author = self.copy_repository.get_copy_by_id(copy_id)
-        if found_author is None:
-            raise KeyDoesNotExist(f"No author for id {copy_id}")
+        found_copy = self.copy_repository.get_copy_by_id(copy_id)
+        if found_copy is None:
+            raise KeyDoesNotExist(f"No copy for id {copy_id}")
         
-        author = self.copy_repository.delete_copy(copy_id)
-        return author
+        copy = self.copy_repository.delete_copy(copy_id)
+        return copy

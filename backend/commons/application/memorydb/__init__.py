@@ -145,7 +145,10 @@ class MemoryDatabase(Singleton):
         """
         Get the entity for a single relation
         """
-        return self.get_relations(entity, cls_type, relation)[0]
+        relations = self.get_relations(entity, cls_type, relation)
+        if len(relations) > 0:
+            return relations[0]
+        return None
     
 
     def get_relations(self, entity: object, cls_type:Type, relation: str) -> Sequence[object]:

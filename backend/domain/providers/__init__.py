@@ -127,17 +127,30 @@ class ICopyProvider(zope.interface.Interface):
         """
         Delete the copy from the library
         """
+        ...
 
     def return_checkouted_copy(self, copy_id: int):
         """
         Make the return to the library of checkout copy
         """
-
+        ...
     
 class ICheckoutProvider(zope.interface.Interface):
     """
     Interface for checkouts repository actions
     """
+    def get_all_checkouts(self) -> Sequence[Checkout]:
+        """
+        Get all the checkouts
+        """
+        ...
+
+
+    def get_checkout_by_id_by_id(self, checkout_id: int) -> Checkout:
+        """
+        Get the checkout by its id
+        """
+        ...
 
     def create_checkout(self, checkout: Checkout) -> Checkout:
         """
@@ -146,14 +159,22 @@ class ICheckoutProvider(zope.interface.Interface):
         ...
 
 
-    def prolongate_checkout(self, checkout: Checkout, days_duration: int) -> Checkout:
+    def modify_checkout(self, checkout: Checkout) -> Checkout:
+        """
+        Create the checkout of a copy of a book
+        """
+        ...
+
+
+    def patch_checkout(self, checkout: Checkout, days_duration: int) -> Checkout:
         """
         Prolongates a checkout of 'duration' days
         """
         ...
+        
 
-    def close_checkout(self, checkout: Checkout) -> Checkout:
+    def delete_checkout(self, checkout_id: int) -> Checkout:
         """
-        Close the checkout as copy returns to library
+        Delete the checkout as copy returns to library
         """
         ...

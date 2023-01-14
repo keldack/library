@@ -1,11 +1,12 @@
 import zope.interface
+import datetime
 from typing import Sequence
 from wired import service_factory
 
 from commons.application.memorydb import MemoryDatabase
 
 from domain.providers import IAuthorProvider, IBookProvider, ICopyProvider, ICheckoutProvider
-from domain.models import Author, Book, Copy, Checkout, CheckoutStatus
+from domain.models import Author, Book, Copy, Checkout
 
 @service_factory(for_=IAuthorProvider, name="memory")
 @zope.interface.implementer(IAuthorProvider)
@@ -157,7 +158,7 @@ class CopyRepository():
     
     def get_copy_by_id(self, copy_id: int) -> Copy:
         """
-        Create a new copy of a book in the library
+        Get the copy by its id
         """
         copy = self.memory_db.get_entity(Copy, copy_id)
         if copy:
@@ -211,6 +212,24 @@ class CheckoutRepository():
     def __init__(self):
         self.memory_db = MemoryDatabase()
 
+    
+    def get_all_checkouts(self) -> Sequence[Checkout]:
+        """
+        Get all the checkouts
+        """
+        return self.memory_db.get_entities_type(Checkout)
+        
+
+    def get_checkout_by_id(self, checkout_id: int) -> Checkout:
+        """
+        Get the checkout by its id
+        """
+        checkout = self.memory_db.get_entity(Checkout, checkout_id)
+        if checkout:
+            checkout.copy = self.memory_db.get_the_relation(checkout, Copy, "checkout")
+            checkout.copy.book = self.memory_db.get_the_relation(checkout.copy, Book, "copy")
+
+        return checkout
 
     def create_checkout(self, checkout: Checkout) -> Checkout:
         """
@@ -218,25 +237,37 @@ class CheckoutRepository():
         """
         self.memory_db.add_entity(checkout)
         self.memory_db.add_relation(checkout.copy, checkout, "checkout")
+
+        checkout.copy = self.memory_db.get_the_relation(checkout, Copy, "checkout")
+        checkout.copy.book = self.memory_db.get_the_relation(checkout.copy, Book, "copy")
         return checkout
 
     def modify_checkout(self, checkout: Checkout) -> Checkout:
         """
         Modify the checkout 
         """
-        found_checkout: Checkout = self.memory_db.get_entity(checkout.id)
+        self.memory_db.replace_entity(checkout)
+        self.memory_db.remove_all_relations(checkout, "checkout")
+        self.memory_db.add_relation(checkout.copy, checkout, "checkout")
+        
+        checkout.copy = self.memory_db.get_the_relation(checkout, Copy, "checkout")
+        checkout.copy.book = self.memory_db.get_the_relation(checkout.copy, Book, "copy")
+        return checkout
+        
 
-
-    def prolongate_checkout(self, checkout: Checkout, days_duration: int) -> Checkout:
+    def patch_checkout(self, checkout: Checkout) -> Checkout:
         """
         Prolongates a checkout of 'duration' days
         """
-        checkout: Checkout = self.memory_db.get
+        self.memory_db.replace_entity(checkout)
+        checkout.copy = self.memory_db.get_the_relation(checkout, Copy, "checkout")
+        checkout.copy.book = self.memory_db.get_the_relation(checkout.copy, Book, "copy")
+        return checkout
 
-    def close_checkout(self, checkout: Checkout) -> Checkout:
+
+    def delete_checkout(self, checkout_id: int) -> Checkout:
         """
         Close the checkout as copy returns to library
         """
-        found_checkout: Checkout = self.memory_db.get_entity(checkout.id)
-        found_checkout.state = CheckoutStatus.CLOSED
+        self.memory_db.delete_entity(Checkout, checkout_id)
     

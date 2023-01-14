@@ -1,8 +1,8 @@
 from typing import List
 from fastapi import APIRouter, HTTPException, status, Request, Response
 
-from application.schemas.checkout import CheckoutInputSchema, CheckoutBaseSchema, CheckoutInfoSchema
-from domain.models import Checkout
+from application.schemas.checkout import CheckoutInputSchema, CheckoutProlongationInputSchema, CheckoutBaseSchema, CheckoutInfoSchema
+from domain.models import Checkout, Prolongation
 from domain.usecases.checkouts import CreateCheckout, ReadCheckout, ReadCheckouts, ModifyCheckout, ProlongateCheckout, DeleteCheckout
 from domain.usecases.exceptions import KeyDoesNotExist
 
@@ -21,12 +21,17 @@ async def get_all_checkouts():
     checkouts = ReadCheckouts().execute()
     return [checkout.to_schema() for checkout in checkouts]
 
+
 @router.get("/{checkout_id}", response_model=CheckoutInfoSchema)
 async def get_checkout_by_id(checkout_id: int):
     """Get a checkout by its id"""
     try:
         checkout = ReadCheckout().execute(checkout_id)
-        return checkout.to_schema()
+        schema = checkout.to_schema()
+        schema["copy_id"] = checkout.copy.id
+        schema["book_isbn"] = checkout.copy.book.isbn
+        schema["book_title"] = checkout.copy.book.title
+        return schema
     except KeyDoesNotExist as exception:
         raise HTTPException(status_code=404, detail=str(exception))
 
@@ -37,17 +42,38 @@ async def create_checkout(request: Request, response: Response, schema: Checkout
     checkout: Checkout = schema.to_domain()
     checkout = CreateCheckout().execute(checkout)
     response.headers["Location"] = f"{request.base_url}checkouts/{checkout.id}"
-    return checkout.to_schema()
+    schema = checkout.to_schema()
+    schema["copy_id"] = checkout.copy.id
+    schema["book_isbn"] = checkout.copy.book.isbn
+    schema["book_title"] = checkout.copy.book.title
+    return schema
 
 
-@router.put("/{checkout_id}")
+@router.post("/{checkout_id}/prolongation", response_model=CheckoutInfoSchema)
+async def prolongate_checkout(checkout_id: int, schema: CheckoutProlongationInputSchema):
+    """Create a checkout"""
+    prolongation: Prolongation = schema.to_domain()
+    prolongation.checkout_id = checkout_id
+    checkout = ProlongateCheckout().execute(prolongation)
+    schema = checkout.to_schema()
+    schema["copy_id"] = checkout.copy.id
+    schema["book_isbn"] = checkout.copy.book.isbn
+    schema["book_title"] = checkout.copy.book.title
+    return schema
+
+
+@router.put("/{checkout_id}", response_model=CheckoutInfoSchema)
 async def modify_checkout(checkout_id: str, schema: CheckoutInputSchema):
     """Modify a checkout for """
     try:
         checkout: Checkout = schema.to_domain()
         checkout.id = checkout_id
-        checkout = PatchCheckout().execute(checkout)
-        return checkout.to_schema()
+        checkout = ModifyCheckout().execute(checkout)
+        schema = checkout.to_schema()
+        schema["copy_id"] = checkout.copy.id
+        schema["book_isbn"] = checkout.copy.book.isbn
+        schema["book_title"] = checkout.copy.book.title
+        return schema
     except KeyDoesNotExist as exception:
         raise HTTPException(status_code=404, detail=str(exception))        
 

@@ -6,7 +6,7 @@ import zope.interface
 from application.schemas import IInputSchema
 from application.schemas.copies import CopyBaseSchema
 from application.schemas.books import BookBaseSchema
-from domain.models import Checkout, Copy, CheckoutStatus
+from domain.models import Checkout, Copy, Prolongation
 
 
 @zope.interface.implementer(IInputSchema)
@@ -24,21 +24,31 @@ class CheckoutInputSchema(BaseModel):
             id = self.id, 
             borrower = self.borrower,
             copy = Copy(id=self.copy_id),
-            state = CheckoutStatus.OPENED
         )
 
+@zope.interface.implementer(IInputSchema)
+class CheckoutProlongationInputSchema(BaseModel):
+    """
+    Schema for checkout prolongation
+    """
+    days: int
+    checkout_id: int | None = None
+
+    def to_domain(self) -> Prolongation:
+        
+        return Prolongation(days = self.days, checkout_id = self.checkout_id)
 
 # Output Schemas
 class CheckoutBaseSchema(BaseModel):
 
     id: int
     on_date: date
-    due_date: date
-    status: str
-    copy_: CopyBaseSchema
+    return_date: date
+    borrower: str
+    
 
 class CheckoutInfoSchema(CheckoutBaseSchema):
     
-    book: BookBaseSchema
-
-
+    copy_id: int
+    book_isbn: str
+    book_title: str

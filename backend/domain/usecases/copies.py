@@ -15,6 +15,8 @@ class CreateCopy(UseCaseWrapper):
         self.book_repository: IBookProvider = self.inject(IBookProvider, "persistence")
 
     def execute(self, copy: Copy):
+
+        #1 - Check book exists to create a copy of it
         found_book = self.book_repository.get_book_by_id(copy.book.id)
         if found_book is None:
             raise KeyDoesNotExist(f"Copy creation - No book for id {copy.book.id}")

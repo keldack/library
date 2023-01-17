@@ -5,7 +5,7 @@ from application.schemas.books import BookInputSchema, BookBaseSchema, BookInfoS
 from application.schemas.authors import AuthorBaseSchema
 from domain.models import Book
 from domain.usecases.books import CreateBook, ReadBooks, ReadBook, UpdateBook, DeleteBook, GetCopiesOfBook
-from domain.usecases.exceptions import KeyDoesNotExist
+from domain.usecases.exceptions import KeyDoesNotExist, ISBNAlreadyUsed
 
 router = APIRouter(
     prefix="/books",
@@ -34,7 +34,6 @@ async def get_book_by_id(book_id: int):
                 AuthorBaseSchema(id=author.id, name = author.name) for author in book.authors
             ]
         )
-        print(schema)
         return schema
 
     except KeyDoesNotExist as exception:
@@ -51,7 +50,9 @@ async def create_book(request: Request, response: Response, schema: BookInputSch
         response.headers["Location"] = f"{request.base_url}books/{book.id}"
         return book.to_schema()
     except KeyDoesNotExist as exception:
-        raise HTTPException(status_code=400, detail=str(exception))
+        raise HTTPException(status_code=404, detail=str(exception))
+    except ISBNAlreadyUsed as isbn_exception:
+        raise HTTPException(status_code=400, detail=str(isbn_exception))
     
 
 @router.put("/{book_id}", response_model=BookInfoSchema)
@@ -64,6 +65,8 @@ async def modify_book(book_id: str, schema: BookInputSchema):
         return book.to_schema()
     except KeyDoesNotExist as exception:
         raise HTTPException(status_code=404, detail=str(exception))
+    except ISBNAlreadyUsed as isbn_exception:
+        raise HTTPException(status_code=400, detail=str(isbn_exception))
 
 
 @router.delete("/{book_id}", status_code=status.HTTP_204_NO_CONTENT)

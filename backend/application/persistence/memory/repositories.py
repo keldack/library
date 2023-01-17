@@ -101,8 +101,12 @@ class BookRepository():
         """
         Returns specific book for id
         """
-        return self.memory_db.get_entity_by_value(Book, "isbn", book_isbn)
-
+        result = None
+        result_list = self.memory_db.get_entity_by_value(Book, "isbn", book_isbn)
+        if len(result_list):
+            result = result_list[0]
+        return result
+        
 
     def create_book(self, book: Book) -> Book:
         """
@@ -218,7 +222,7 @@ class CheckoutRepository():
         Get all the checkouts
         """
         return self.memory_db.get_entities_type(Checkout)
-        
+
 
     def get_checkout_by_id(self, checkout_id: int) -> Checkout:
         """
@@ -230,6 +234,18 @@ class CheckoutRepository():
             checkout.copy.book = self.memory_db.get_the_relation(checkout.copy, Book, "copy")
 
         return checkout
+
+
+    def get_checkout_by_copy_id(self, copy_id: int) -> Checkout:
+        """
+        Get the checkout by the id of the copy
+        """
+        checkout: Checkout = None
+        copy: Copy = self.memory_db.get_entity(Copy, copy_id)
+        if copy:
+            checkout = self.memory_db.get_the_relation(copy, Checkout, "checkout")
+        return checkout
+
 
     def create_checkout(self, checkout: Checkout) -> Checkout:
         """

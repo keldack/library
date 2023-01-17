@@ -4,7 +4,7 @@ from fastapi import APIRouter, HTTPException, status, Request, Response
 from application.schemas.checkout import CheckoutInputSchema, CheckoutProlongationInputSchema, CheckoutBaseSchema, CheckoutInfoSchema
 from domain.models import Checkout, Prolongation
 from domain.usecases.checkouts import CreateCheckout, ReadCheckout, ReadCheckouts, ModifyCheckout, ProlongateCheckout, DeleteCheckout
-from domain.usecases.exceptions import KeyDoesNotExist
+from domain.usecases.exceptions import KeyDoesNotExist, CopyAlreadyCheckouted
 
 router = APIRouter()
 
@@ -39,14 +39,19 @@ async def get_checkout_by_id(checkout_id: int):
 @router.post("", status_code=status.HTTP_201_CREATED)
 async def create_checkout(request: Request, response: Response, schema: CheckoutInputSchema):
     """Create a checkout"""
-    checkout: Checkout = schema.to_domain()
-    checkout = CreateCheckout().execute(checkout)
-    response.headers["Location"] = f"{request.base_url}checkouts/{checkout.id}"
-    schema = checkout.to_schema()
-    schema["copy_id"] = checkout.copy.id
-    schema["book_isbn"] = checkout.copy.book.isbn
-    schema["book_title"] = checkout.copy.book.title
-    return schema
+    try:
+        checkout: Checkout = schema.to_domain()
+        checkout = CreateCheckout().execute(checkout)
+        response.headers["Location"] = f"{request.base_url}checkouts/{checkout.id}"
+        schema = checkout.to_schema()
+        schema["copy_id"] = checkout.copy.id
+        schema["book_isbn"] = checkout.copy.book.isbn
+        schema["book_title"] = checkout.copy.book.title
+        return schema
+    except KeyDoesNotExist as exception:
+        raise HTTPException(status_code=404, detail=str(exception))
+    except CopyAlreadyCheckouted as already_exception:
+        raise HTTPException(status_code=400, detail=str(already_exception))
 
 
 @router.post("/{checkout_id}/prolongation", response_model=CheckoutInfoSchema)
@@ -76,7 +81,8 @@ async def modify_checkout(checkout_id: str, schema: CheckoutInputSchema):
         return schema
     except KeyDoesNotExist as exception:
         raise HTTPException(status_code=404, detail=str(exception))        
-
+    except CopyAlreadyCheckouted as already_exception:
+        raise HTTPException(status_code=400, detail=str(already_exception))
 
 @router.delete("/{checkout_id}", status_code=status.HTTP_204_NO_CONTENT)
 async def delete_checkout(checkout_id: str):

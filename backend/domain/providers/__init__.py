@@ -146,11 +146,18 @@ class ICheckoutProvider(zope.interface.Interface):
         ...
 
 
-    def get_checkout_by_id_by_id(self, checkout_id: int) -> Checkout:
+    def get_checkout_by_id(self, checkout_id: int) -> Checkout:
         """
         Get the checkout by its id
         """
         ...
+
+    def get_checkout_by_copy_id(self, copy_id: int) -> Checkout:
+        """
+        Get the checkout by the id of the copy
+        """
+        ...
+
 
     def create_checkout(self, checkout: Checkout) -> Checkout:
         """

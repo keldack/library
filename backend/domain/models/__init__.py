@@ -60,8 +60,8 @@ class Checkout(Entity):
     _: KW_ONLY
     id: int = None
     copy: Copy
-    on_date: datetime.date = field(default=datetime.date.today())
-    return_date: datetime.date = field(default=datetime.date.today() + datetime.timedelta(days=15))
+    on_date: datetime.date = None
+    return_date: datetime.date = None
     borrower: str
 
     def to_schema(self):

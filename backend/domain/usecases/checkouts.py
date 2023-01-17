@@ -3,9 +3,9 @@ import datetime
 
 from domain.interfaces import IUseCase
 from domain.usecases import UseCaseWrapper
-from domain.models import Checkout, Prolongation
-from domain.providers import ICheckoutProvider
-from domain.usecases.exceptions import KeyDoesNotExist
+from domain.models import Checkout, Copy, Prolongation
+from domain.providers import ICheckoutProvider, ICopyProvider
+from domain.usecases.exceptions import KeyDoesNotExist, CopyAlreadyCheckouted
 
 @zope.interface.implementer(IUseCase)
 class CreateCheckout(UseCaseWrapper):
@@ -14,11 +14,24 @@ class CreateCheckout(UseCaseWrapper):
     def __init__(self):
         UseCaseWrapper.__init__(self)
         self.checkout_repository: ICheckoutProvider = self.inject(ICheckoutProvider, "persistence")
+        self.copy_repository: ICopyProvider = self.inject(ICopyProvider, "persistence")
 
     def execute(self, checkout: Checkout):
-        d = datetime.date.today()
-        
-        #1 Checkout starts at current day
+
+        #1 check copy exist
+        copy: Copy = self.copy_repository.get_copy_by_id(checkout.copy.id)
+        if checkout is None:
+            raise KeyDoesNotExist(f"No copy for id {checkout.copy.id}")
+
+        #2 check copy is free (ie, is not already engaged in a checkout)
+        found_checkout: Checkout = self.checkout_repository.get_checkout_by_copy_id(checkout.copy.id)
+        if found_checkout:
+            # We found a checkout for the copy, so thez copy is not free
+            raise CopyAlreadyCheckouted(f"Copy {checkout.copy.id} already checkouted with {found_checkout.id}")
+
+
+        d = datetime.date.today() 
+        # Checkout starts at current day
         checkout.on_date = d
         # .. and for a full 2 weeks period
         checkout.due_date = d + datetime.timedelta(days=14)

@@ -4,13 +4,28 @@ from domain.interfaces import IUseCase
 from domain.usecases import UseCaseWrapper
 from domain.models import Book
 from domain.providers import IBookProvider, IAuthorProvider
-from domain.usecases.exceptions import KeyDoesNotExist
+from domain.usecases.exceptions import KeyDoesNotExist, ISBNAlreadyUsed
 
 
 def check_authors_of_book_exist(book :Book, author_repository: IAuthorProvider):
     for author in book.authors:
         if not author_repository.get_author_by_id(author.id):
             raise KeyDoesNotExist(f"No author for id {author.id}")
+            
+
+def check_isbn_not_already_used(book: Book, book_repository: IBookProvider):
+    books_with_isbn = book_repository.get_book_by_isbn(book.isbn)
+    error = False
+    if books_with_isbn:
+        if book.id:
+            # book is already created, we just check the found book for isbn is the same id, 
+            # since we are in modification case, else we raise exception
+            if book.id != books_with_isbn.id:
+                error = True
+        else:        
+            error = True
+    if error:
+        raise ISBNAlreadyUsed(f"ISBN {book.isbn} already used for '{books_with_isbn.title}'")
 
 
 @zope.interface.implementer(IUseCase)
@@ -26,6 +41,9 @@ class CreateBook(UseCaseWrapper):
 
         #1 - Rules - we check authors exist
         check_authors_of_book_exist(book, self.author_repository)
+
+        #2 - Rules - we check ISBN not already  used
+        check_isbn_not_already_used(book, self.book_repository)
 
         self.book_repository.create_book(book)
         return book
@@ -47,6 +65,9 @@ class UpdateBook(UseCaseWrapper):
 
         #2 - Rules - we check authors exist
         check_authors_of_book_exist(book, self.author_repository)
+
+        #3 - Rules - we check ISBN not already  used
+        check_isbn_not_already_used(book, self.book_repository)
 
         self.book_repository.update_book(book)
         return book

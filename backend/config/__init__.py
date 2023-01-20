@@ -1,27 +1,44 @@
-project_name = "Library"
-version = "0.0.1"
-
+import os
+from dotenv import load_dotenv
 from pydantic import BaseSettings
+from application import version
+
+load_dotenv()
 
 dev = {
     "environment": "development", 
-    "persistence": "memory"
+    "persistence": "memory",
+    "user": "basic",
+    "authentication": "jwt",
 }
 
 staging = {
     "environment": "staging", 
-    "persistence": "memory"
+    "persistence": "memory",
+    "user": "basic",
+    "authentication": "jwt",
 }
 
 prod = {
     "environment": "production", 
-    "persistence": "django"
+    "persistence": "django",
+    "user": "basic",
+    "authentication": "jwt",
 }
 
 class Settings(BaseSettings):
 
-    PROJECT_NAME:str = project_name
+    PROJECT_NAME:str = "Library"
     PROJECT_VERSION:str = version
     MODE = dev
 
+    #Authentication
+    SECRET_KEY: str = os.getenv("SECRET_KEY")
+    ALGORITHM = "HS256"                         
+    ACCESS_TOKEN_EXPIRE_MINUTES = 30
+
 settings = Settings()
+
+from commons.application.dictfile import DictFile
+
+user_db = DictFile("users.txt", "login")

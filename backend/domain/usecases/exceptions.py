@@ -19,3 +19,21 @@ class CopyAlreadyCheckouted(Exception):
     """
     def __init__(self, msg):
         Exception.__init__(self, msg)
+
+
+class LoginAlreadyUsed(Exception):
+    """
+    Exception when a login is already used by an user
+    """
+    def __init__(self, msg):
+        Exception.__init__(self, msg)
+
+
+class CredentialException(Exception):
+    """
+    Exception when checking token
+    """
+    def __init__(self, msg):
+        Exception.__init__(self, msg)
+
+

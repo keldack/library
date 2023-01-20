@@ -1,7 +1,7 @@
 import zope.interface
 from typing import Sequence
 
-from domain.models import Author, Book, Copy, Checkout
+from domain.models import Author, Book, Copy, Checkout, User
 
 
 class IAuthorProvider(zope.interface.Interface):
@@ -183,5 +183,45 @@ class ICheckoutProvider(zope.interface.Interface):
     def delete_checkout(self, checkout_id: int) -> Checkout:
         """
         Delete the checkout as copy returns to library
+        """
+        ...
+
+
+class IUserProvider(zope.interface.Interface):
+    """
+    User intercation provider
+    """
+    def get_all_users(self) -> Sequence[User]:
+        """
+        Get all users
+        """
+        ...
+
+    def get_user_by_identifier(self, identifier: str) -> User:
+        """
+        Get an user from its identifier login
+        """
+        ...
+
+    def create_user(self, user: User) -> User:
+        """
+        Create a new user
+        """
+        ...
+
+class IAuthenticationProvider(zope.interface.Interface):
+    """
+    Provider to manage authentication
+    """
+
+    def authenticate(self, user: User):
+        """
+        Authenticate user
+        """
+        ...
+
+    def check_authorization(self, token: str) -> str:
+        """
+        Check Authorization from token string, and return user login if ok
         """
         ...

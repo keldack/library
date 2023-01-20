@@ -14,13 +14,6 @@ router = APIRouter(
     tags=["copies"]
 )
 
-# @router.get("")
-# async def get_all_copies():
-#     """Get all copies"""
-#     copies = ReadCopies().execute()
-    # return [copy.to_schema() for copy in copies]
-
-
 @router.get("/{copy_id}", response_model=CopyInfoSchema)
 async def get_copy_by_id(copy_id: int):
     """Get a copy of a book by its id"""

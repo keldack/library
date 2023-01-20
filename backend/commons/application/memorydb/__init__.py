@@ -16,8 +16,7 @@ class MemoryDatabase(Singleton):
     """
     Memory Repository is just a domain entity object storage like a DB memory. It is instantiated as singleton
     """
-
-    
+   
 
     def __to_dataclass(self, class_to_instantiate, arg_dict): 
         if class_to_instantiate not in self.class_field_cache:

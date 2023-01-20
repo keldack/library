@@ -1,22 +1,21 @@
 import zope.interface
+import datetime
 from typing import Sequence
 from wired import service_factory
-
-from commons.application.memorydb import MemoryDatabase
 
 from domain.providers import IAuthorProvider, IBookProvider, ICopyProvider, ICheckoutProvider
 from domain.models import Author, Book, Copy, Checkout
 
-@service_factory(for_=IAuthorProvider, name="memory")
+from .library.models import Author as DB_Author, Book as DB_Book, Copy as DB_Copy, Checkout as DB_Checkout
+
+@service_factory(for_=IAuthorProvider, name="django")
 @zope.interface.implementer(IAuthorProvider)
-class AuthorRepository:
+class AuthorDjangoRepository:
 
     @classmethod
     def __wired_factory__(cls, container):
         return cls()
 
-    def __init__(self):
-        self.memory_db = MemoryDatabase()
 
     def get_all_authors(self) -> Sequence[Author]:
         """
@@ -65,7 +64,7 @@ class AuthorRepository:
 
 @service_factory(for_=IBookProvider, name="memory")
 @zope.interface.implementer(IBookProvider)
-class BookRepository():
+class BookDjangoRepository():
     """
     Interface for book repository actions
     """
@@ -73,9 +72,6 @@ class BookRepository():
     @classmethod
     def __wired_factory__(cls, container):
         return cls()
-
-    def __init__(self):
-        self.memory_db = MemoryDatabase()
 
 
     def get_all_books(self) -> Sequence[Book]:
@@ -146,7 +142,7 @@ class BookRepository():
 
 @service_factory(for_=ICopyProvider, name="memory")
 @zope.interface.implementer(ICopyProvider)
-class CopyRepository():
+class CopyDjangoRepository():
     """
     Interface for copy repository actions
     """
@@ -154,9 +150,6 @@ class CopyRepository():
     @classmethod
     def __wired_factory__(cls, container):
         return cls()
-
-    def __init__(self):
-        self.memory_db = MemoryDatabase()
 
     
     def get_copy_by_id(self, copy_id: int) -> Copy:
@@ -203,7 +196,7 @@ class CopyRepository():
 
 @service_factory(for_=ICheckoutProvider, name="memory")
 @zope.interface.implementer(ICheckoutProvider)
-class CheckoutRepository():
+class CheckoutDjangoRepository():
     """
     Interface for checkout repository actions
     """
@@ -211,9 +204,6 @@ class CheckoutRepository():
     @classmethod
     def __wired_factory__(cls, container):
         return cls()        
-
-    def __init__(self):
-        self.memory_db = MemoryDatabase()
 
     
     def get_all_checkouts(self) -> Sequence[Checkout]:

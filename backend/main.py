@@ -8,6 +8,7 @@ from application.routers.authors import router as authors_router
 from application.routers.books import router as books_router
 from application.routers.copies import router as copies_router
 from application.routers.checkouts import router as checkouts_router
+from application.routers.users import router as users_router
 
 LibraryRegistry.init_registry_and_scan()
 
@@ -15,6 +16,7 @@ print(LibraryRegistry.check_all_registered())
 
 app = FastAPI(title=settings.PROJECT_NAME,version=settings.PROJECT_VERSION)
 
+app.include_router(users_router)
 app.include_router(authors_router)
 app.include_router(books_router)
 app.include_router(copies_router)

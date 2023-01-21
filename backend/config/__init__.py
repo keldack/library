@@ -37,6 +37,8 @@ class Settings(BaseSettings):
     ALGORITHM = "HS256"                         
     ACCESS_TOKEN_EXPIRE_MINUTES = 30
 
+    WITH_AUTHENTICATION = False
+
 settings = Settings()
 
 from commons.application.dictfile import DictFile

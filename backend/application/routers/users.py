@@ -6,12 +6,17 @@ from domain.models import User
 from domain.usecases.users import Login, UserMe, CreateUser, GetAllUsers, GetUser
 from domain.usecases.exceptions import LoginAlreadyUsed, KeyDoesNotExist, CredentialException
 
-router = APIRouter(
+public_router = APIRouter(
     prefix="/users",
     tags=["users"]
 )
 
-@router.post("/login", response_model=TokenBaseSchema)
+private_router = APIRouter(
+    prefix="/users",
+    tags=["users"]
+)
+
+@public_router.post("/login", response_model=TokenBaseSchema)
 async def login(schema: LoginInputSchema):
     """Login a user"""
     try:
@@ -21,7 +26,7 @@ async def login(schema: LoginInputSchema):
         raise HTTPException(status_code=404, detail=str(exception))
     
 
-@router.get("/me", response_model=UserBaseSchema)
+@private_router.get("/me", response_model=UserBaseSchema)
 async def user_me(request: Request):
     """Register a new user, very simple process just for the demo"""
 
@@ -37,7 +42,7 @@ async def user_me(request: Request):
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail=str(exception))
 
 
-@router.post("", response_model=UserBaseSchema)
+@private_router.post("", response_model=UserBaseSchema)
 async def create_user(schema: UserInputSchema):
     """Create an user"""
     user: User = schema.to_domain() 
@@ -48,14 +53,14 @@ async def create_user(schema: UserInputSchema):
         raise HTTPException(status_code=400, detail=str(exception))
 
 
-@router.get("", response_model=List[UserBaseSchema])
+@private_router.get("", response_model=List[UserBaseSchema])
 async def get_all_users():
     """Create an user"""
     users = GetAllUsers().execute()
     return [user.to_schema() for user in users]
 
 
-@router.get("/{identifier}", response_model=UserBaseSchema)
+@private_router.get("/{identifier}", response_model=UserBaseSchema)
 async def get_user(identifier: str):
     """Create an user"""
     user = GetUser().execute(identifier)

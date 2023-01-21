@@ -7,19 +7,24 @@ from domain.models import Book
 from domain.usecases.books import CreateBook, ReadBooks, ReadBook, UpdateBook, DeleteBook, GetCopiesOfBook
 from domain.usecases.exceptions import KeyDoesNotExist, ISBNAlreadyUsed
 
-router = APIRouter(
+public_router = APIRouter(
     prefix="/books",
     tags=["books"]
 )
 
-@router.get("", response_model=List[BookBaseSchema])
+private_router = APIRouter(
+    prefix="/books",
+    tags=["books"]
+)
+
+@public_router.get("", response_model=List[BookBaseSchema])
 async def get_all_books():
     """Get all books"""
     books = ReadBooks().execute()
     return [book.to_schema() for book in books]
 
 
-@router.get("/{book_id}", response_model=BookInfoSchema)
+@public_router.get("/{book_id}", response_model=BookInfoSchema)
 async def get_book_by_id(book_id: int):
     """Get a book by its id"""
     try:
@@ -40,7 +45,7 @@ async def get_book_by_id(book_id: int):
         raise HTTPException(status_code=404, detail=str(exception))
 
 
-@router.post("", status_code=status.HTTP_201_CREATED, response_model=BookInfoSchema)
+@private_router.post("", status_code=status.HTTP_201_CREATED, response_model=BookInfoSchema)
 async def create_book(request: Request, response: Response, schema: BookInputSchema):
     """Create a book"""
     
@@ -55,7 +60,7 @@ async def create_book(request: Request, response: Response, schema: BookInputSch
         raise HTTPException(status_code=400, detail=str(isbn_exception))
     
 
-@router.put("/{book_id}", response_model=BookInfoSchema)
+@private_router.put("/{book_id}", response_model=BookInfoSchema)
 async def modify_book(book_id: str, schema: BookInputSchema):
     """Modify a book"""
     try:
@@ -69,7 +74,7 @@ async def modify_book(book_id: str, schema: BookInputSchema):
         raise HTTPException(status_code=400, detail=str(isbn_exception))
 
 
-@router.delete("/{book_id}", status_code=status.HTTP_204_NO_CONTENT)
+@private_router.delete("/{book_id}", status_code=status.HTTP_204_NO_CONTENT)
 async def delete_book(book_id: int):
     """Delete a book"""
     
@@ -79,7 +84,7 @@ async def delete_book(book_id: int):
         raise HTTPException(status_code=404, detail=str(exception))
 
 
-@router.get("/{book_id}/copies")
+@public_router.get("/{book_id}/copies")
 async def get_copies_of_book(book_id: int):
     """Get all copies of a book"""
     

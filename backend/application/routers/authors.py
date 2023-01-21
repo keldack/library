@@ -8,12 +8,17 @@ from domain.models import Author
 from domain.usecases.authors import CreateAuthor, ReadAuthors, ReadAuthor, UpdateAuthor, DeleteAuthor, ReadBooksOfAuthor
 from domain.usecases.exceptions import KeyDoesNotExist
 
-router = APIRouter(
+public_router = APIRouter(
     prefix="/authors",
     tags=["authors"]
 )
 
-@router.get("", response_model=List[AuthorBaseSchema])
+private_router = APIRouter(
+    prefix="/authors",
+    tags=["authors"]
+)
+
+@public_router.get("", response_model=List[AuthorBaseSchema])
 async def get_all_authors():
     """Get all authors"""
     authors = ReadAuthors().execute()
@@ -21,7 +26,7 @@ async def get_all_authors():
     
 
 
-@router.get("/{author_id}", response_model=AuthorInfoSchema)
+@public_router.get("/{author_id}", response_model=AuthorInfoSchema)
 async def get_author_by_id(author_id: int):
     """Get an author by its id"""
     try:
@@ -31,7 +36,7 @@ async def get_author_by_id(author_id: int):
         raise HTTPException(status_code=404, detail=str(exception))
 
 
-@router.post(
+@private_router.post(
     "", 
     status_code=status.HTTP_201_CREATED,
     response_model=AuthorBaseSchema
@@ -44,7 +49,7 @@ async def create_author(request: Request, response: Response, schema: AuthorInpu
     return author
 
 
-@router.put("/{author_id}", response_model=AuthorBaseSchema)
+@private_router.put("/{author_id}", response_model=AuthorBaseSchema)
 async def modify_author(author_id: int, schema: AuthorInputSchema) -> AuthorBaseSchema:
     """Modify an author"""
     
@@ -57,7 +62,7 @@ async def modify_author(author_id: int, schema: AuthorInputSchema) -> AuthorBase
         raise HTTPException(status_code=404, detail=str(exception))
 
 
-@router.delete("/{author_id}", status_code=status.HTTP_204_NO_CONTENT)
+@private_router.delete("/{author_id}", status_code=status.HTTP_204_NO_CONTENT)
 async def delete_author(author_id: int):
     """Delete an author"""
 
@@ -67,7 +72,7 @@ async def delete_author(author_id: int):
         raise HTTPException(status_code=404, detail=str(exception))
 
 
-@router.get("/{author_id}/books", response_model=List[BookBaseSchema])
+@public_router.get("/{author_id}/books", response_model=List[BookBaseSchema])
 async def get_books_of_author(author_id: int):
     """Get all books of an author id"""
     try:

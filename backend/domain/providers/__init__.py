@@ -129,11 +129,6 @@ class ICopyProvider(zope.interface.Interface):
         """
         ...
 
-    def return_checkouted_copy(self, copy_id: int):
-        """
-        Make the return to the library of checkout copy
-        """
-        ...
     
 class ICheckoutProvider(zope.interface.Interface):
     """

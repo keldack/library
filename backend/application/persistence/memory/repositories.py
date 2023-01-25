@@ -194,13 +194,6 @@ class CopyRepository():
         return self.memory_db.delete_entity(Copy, copy_id)
 
 
-    def return_checkouted_copy(self, copy_id: int):
-        """
-        Make the return to the library of checkout copy
-        """
-        return self.memory_db.get_entity(Copy, copy_id)
-        
-
 @service_factory(for_=ICheckoutProvider, name="memory")
 @zope.interface.implementer(ICheckoutProvider)
 class CheckoutRepository():

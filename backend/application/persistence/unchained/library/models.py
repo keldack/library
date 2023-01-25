@@ -15,7 +15,7 @@ class Book(models.Model):
 
 class Copy(models.Model):
 
-    book = models.ForeignKey(Book, on_delete=models.PROTECT)
+    book = models.ForeignKey(Book, on_delete=models.PROTECT, related_name="copies")
     place = models.CharField(max_length=20)
 
 

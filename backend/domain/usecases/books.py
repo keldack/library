@@ -66,8 +66,9 @@ class UpdateBook(UseCaseWrapper):
         #2 - Rules - we check authors exist
         check_authors_of_book_exist(book, self.author_repository)
 
-        #3 - Rules - we check ISBN not already  used
-        check_isbn_not_already_used(book, self.book_repository)
+        #3 - Rules - we check ISBN not already  used if we aim to change it
+        if book.isbn != found_book.isbn:
+            check_isbn_not_already_used(book, self.book_repository)
 
         self.book_repository.update_book(book)
         return book
